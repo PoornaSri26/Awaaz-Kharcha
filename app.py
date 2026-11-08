@@ -19,7 +19,7 @@ UI = {
     "hi-IN": {
         "title": "आवाज़ खर्चा",
         "subtitle": "जो खर्च किया, बस बोलिए। हम लिख लेंगे।",
-        "speak": "बोलिए (Tap & Speak)",
+        "speak": "बोलिए या WhatsApp वॉइस नोट अपलोड करें",
         "heard": "मैंने यह सुना (Edit if needed)",
         "save": "खर्चा सेव करें",
         "today": "आज का खर्च",
@@ -40,7 +40,7 @@ UI = {
     "te-IN": {
         "title": "ఆవాజ్ ఖర్చు",
         "subtitle": "మీరు ఖర్చు పెట్టింది మాట్లాడండి. మేము రాస్తాము.",
-        "speak": "మాట్లాడండి (Tap & Speak)",
+        "speak": "మాట్లాడండి లేదా వాట్సాప్ వాయిస్ నోట్ అప్‌లోడ్ చేయండి",
         "heard": "నేను విన్నది (సరిచూసుకోండి)",
         "save": "ఖర్చులను సేవ్ చేయండి",
         "today": "ఈ రోజు ఖర్చు",
@@ -61,7 +61,7 @@ UI = {
     "en-IN": {
         "title": "Awaaz Kharcha",
         "subtitle": "Say what you spent. We write it down.",
-        "speak": "Tap & Speak",
+        "speak": "Tap & Speak or drop a WhatsApp voice note",
         "heard": "What I heard (Edit if needed)",
         "save": "Save Expenses",
         "today": "Today's Spent",
@@ -116,7 +116,7 @@ CATEGORIES = {
     "Udhar/Khata": ["udhar", "diya", "diye", "wapas", "liya", "liye", "khatam", "baki", "lena", "dena", "అప్పు", "ఇచ్చాను", "తీసుకున్నా"]
 }
 
-# ---------------- FEATURE 1: HINGLISH & INDIAN NUMBER WORDS TO DIGITS ----------------
+# ---------------- HINGLISH & INDIAN NUMBER WORDS TO DIGITS ----------------
 NUMBER_WORDS = {
     "dedh sau": "150", "dhai sau": "250", "ek sau": "100", "do sau": "200", "teen sau": "300",
     "char sau": "400", "paanch sau": "500", "chhe sau": "600", "saat sau": "700", "aath sau": "800",
@@ -127,7 +127,6 @@ NUMBER_WORDS = {
 }
 
 def normalize_hinglish_numbers(text: str) -> str:
-    """Replaces spoken colloquial expressions like 'dedh sau', 'dhai sau' into clean numbers."""
     cleaned = text
     for phrase, num in NUMBER_WORDS.items():
         pattern = re.compile(rf"\b{re.escape(phrase)}\b", re.IGNORECASE)
@@ -143,7 +142,6 @@ SPLITTERS = r",|\band\b|\baur\b|\bphir\b|\bthen\b|\binka\b|और|మరియ�
 
 
 def transcribe(audio_bytes: bytes, filename: str, language_code: str) -> str:
-    """Call Gnani Prisma STT v3."""
     if not API_KEY:
         raise RuntimeError("GNANI_API_KEY is not configured.")
     resp = requests.post(
@@ -171,7 +169,6 @@ def categorize(text: str) -> str:
 
 
 def parse_expenses(text: str):
-    """Parses text into expense items while normalizing colloquial number words and detecting Udhar."""
     normalized_text = normalize_hinglish_numbers(text)
     rows = []
     udhar_rows = []
@@ -189,7 +186,6 @@ def parse_expenses(text: str):
         amount = float(m.group())
         chunk_lower = chunk.lower()
 
-        # ---------------- FEATURE 6: UDHAR / KHATA DETECTION ----------------
         is_udhar = any(w in chunk_lower for w in ["udhar", "उधार", "అప్పు", "lent", "borrow", "diya", "diye", "wapas"])
         
         item = re.sub(r"\d+(?:\.\d+)?", " ", chunk)
@@ -197,7 +193,6 @@ def parse_expenses(text: str):
         item = re.sub(r"\s+", " ", item).strip() or "General"
 
         if is_udhar:
-            # Detect who gave/took
             action = "Lent (Diya)" if any(w in chunk_lower for w in ["diya", "diye", "lent", "ఇచ్చాను"]) else "Received/Borrowed (Liya)"
             udhar_rows.append({
                 "date": dt.date.today().isoformat(),
@@ -245,42 +240,65 @@ def save_udhar_rows(rows):
     df.to_csv(UDHAR_FILE, index=False)
 
 
-# ---------------- FEATURE 5: ASK BY VOICE ENGINE ----------------
-def answer_voice_query(query: str, df: pd.DataFrame, udhar_df: pd.DataFrame) -> str:
-    """Answers voice questions like 'is mahine kitna kharch hua?' or 'chai pe kitna gaya?'."""
-    q = query.lower()
+# ---------------- FEATURE: WEEKLY INSIGHT GENERATOR ----------------
+def get_weekly_insight(df: pd.DataFrame) -> str:
+    """Generates a human-friendly weekly insight line."""
+    if df.empty:
+        return "Start logging to unlock your weekly spending insights!"
     
+    df_copy = df.copy()
+    df_copy["date"] = pd.to_datetime(df_copy["date"])
+    now = pd.Timestamp.today().normalize()
+    seven_days_ago = now - pd.Timedelta(days=7)
+    
+    week_df = df_copy[df_copy["date"] >= seven_days_ago]
+    if week_df.empty:
+        week_df = df_copy  # fallback to available data
+    
+    total_week = week_df["amount"].sum()
+    cat_summary = week_df.groupby("category")["amount"].sum()
+    if cat_summary.empty:
+        return "Log your first expense to see your weekly summary."
+    
+    top_cat = cat_summary.idxmax()
+    top_amt = cat_summary.max()
+    
+    # Check top item
+    top_item = week_df[week_df["category"] == top_cat]["item"].value_counts().index[0] if not week_df[week_df["category"] == top_cat].empty else ""
+    item_str = f", mostly on {top_item}" if top_item and top_item != "General" else ""
+    
+    return f"💡 **Weekly Insight:** You spent the most on **{top_cat}** this week: **₹{top_amt:,.0f}** (out of ₹{total_week:,.0f} total){item_str}."
+
+
+# ---------------- ASK BY VOICE ENGINE ----------------
+def answer_voice_query(query: str, df: pd.DataFrame, udhar_df: pd.DataFrame) -> str:
+    q = query.lower()
     if df.empty and udhar_df.empty:
         return "You have not recorded any expenses yet. Record an expense first!"
     
-    # Check date scope
     df_scope = df.copy()
     if not df_scope.empty:
         df_scope["date"] = pd.to_datetime(df_scope["date"])
         today = pd.Timestamp.today().normalize()
 
-    # Query: This month total
     if any(w in q for w in ["is mahine", "this month", "month", "ఈ నెల"]):
         m_df = df_scope[(df_scope["date"].dt.month == today.month) & (df_scope["date"].dt.year == today.year)]
         tot = m_df["amount"].sum()
         top_cat = m_df.groupby("category")["amount"].sum().idxmax() if not m_df.empty else "None"
         return f"This month you spent a total of ₹{tot:,.0f}. Your highest spending category is {top_cat}."
     
-    # Query: Today's total
     if any(w in q for w in ["aaj", "today", "ఈ రోజు", "eeroju"]):
         t_df = df_scope[df_scope["date"] == today]
         tot = t_df["amount"].sum()
         cnt = len(t_df)
         return f"Today you have spent ₹{tot:,.0f} across {cnt} transactions."
 
-    # Query: Specific Category (e.g. Chai / Auto / Petrol)
     for cat_name, words in CATEGORIES.items():
         if any(w in q for w in words):
             matched = df[df["category"] == cat_name]
             tot = matched["amount"].sum()
             return f"You have spent ₹{tot:,.0f} in the {cat_name} category ({len(matched)} items)."
 
-    # Query: Udhar / Khata who owes me
     if any(w in q for w in ["udhar", "khata", "baki", "lent", "అప్పు"]):
         if not udhar_df.empty:
             pending = udhar_df[udhar_df["status"] == "Pending"]
@@ -288,7 +306,6 @@ def answer_voice_query(query: str, df: pd.DataFrame, udhar_df: pd.DataFrame) -> 
             return f"You currently have ₹{tot:,.0f} in pending Udhar ledger across {len(pending)} people."
         return "You have zero pending Udhar records."
 
-    # Default fallback
     tot_lifetime = df["amount"].sum() if not df.empty else 0
     return f"Total tracked spending is ₹{tot_lifetime:,.0f}. Try asking: 'is mahine kitna kharch hua?' or 'chai pe kitna gaya?'."
 
@@ -314,9 +331,23 @@ html, body, [class*="css"] { font-size: 17px; }
 [data-testid="stMetricValue"] { font-size: 2.3rem; font-weight: 800; color: #0F766E; }
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
-.badge-feature {
-    display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem;
-    font-weight: bold; background: #0F766E22; color: #0F766E; margin-right: 6px;
+.insight-card {
+    background: #F1EADF;
+    border-left: 4px solid #0F766E;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin: 12px 0;
+    font-size: 0.95rem;
+    color: #1F2937;
+}
+.budget-badge {
+    background: #FEF3C7;
+    border: 1px solid #F59E0B;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    color: #92400E;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -331,10 +362,12 @@ with col_h1:
 with col_h2:
     with st.popover("ℹ️ Help"):
         st.markdown("""
-        **New Features Added:**
-        - **Hinglish Number Words:** Say *"dedh sau"* (150), *"dhai sau"* (250), *"paanch hazar"* (5000).
-        - **Udhar / Khata Mode:** Say *"Ravi ko 500 udhar diya"* to auto-create ledger.
-        - **Ask by Voice:** Ask *"is mahine kitna kharch hua?"* to hear answers!
+        **Features in Awaaz Kharcha:**
+        - **Number Words:** Say *"dedh sau"* (150), *"dhai sau"* (250), *"paanch hazar"* (5000).
+        - **Forwarded Voice Notes:** Drop any WhatsApp `.ogg`, `.m4a`, or `.mp3`.
+        - **Udhar / Khata Mode:** Say *"Ravi ko 500 udhar diya"*.
+        - **Budget Nudge & Weekly Insight:** Visual habit-building feedback.
+        - **Ask by Voice:** Ask *"is mahine kitna kharch hua?"*.
         """)
 
 # Language Selector
@@ -356,9 +389,8 @@ T = UI[lang_code]
 mode = st.radio("Mode", ["📝 Log Expense / Udhar", "🗣️ Ask by Voice (Q&A)"], horizontal=True, label_visibility="collapsed")
 
 if mode == "📝 Log Expense / Udhar":
-    # Step indicator
     step = 1 if "transcript" not in st.session_state else 2
-    labels = ["① Speak", "② Check", "③ Save"]
+    labels = ["① Speak / Upload", "② Check", "③ Save"]
     html_stepper = " &nbsp;→&nbsp; ".join(
         f"<b style='color:#0F766E; font-size:1.05rem;'>{l}</b>" if i + 1 == step 
         else f"<span style='color:#6B7280;'>{l}</span>"
@@ -366,9 +398,19 @@ if mode == "📝 Log Expense / Udhar":
     )
     st.markdown(f"<div style='margin: 8px 0;'>{html_stepper}</div>", unsafe_allow_html=True)
 
-    # Mic widget
+    # ---------------- DUAL AUDIO INPUT (MIC + WHATSAPP VOICE NOTES) ----------------
     st.markdown(f"#### 🎙️ {T['speak']}")
-    audio = st.audio_input("Record your expenses", key="mic", label_visibility="collapsed")
+    
+    audio_mic = st.audio_input("Record your expenses", key="mic", label_visibility="collapsed")
+    
+    with st.expander("📲 Or Forward / Upload a WhatsApp Voice Note (OGG, M4A, MP3, WAV)"):
+        audio_file = st.file_uploader(
+            "Upload audio file", 
+            type=["ogg", "m4a", "mp3", "wav", "aac"], 
+            label_visibility="collapsed"
+        )
+    
+    active_audio = audio_mic or audio_file
 
     col_info1, col_info2 = st.columns([3, 2])
     with col_info1:
@@ -376,13 +418,14 @@ if mode == "📝 Log Expense / Udhar":
     with col_info2:
         st.caption(T['privacy'])
 
-    # Auto-transcribe upon receiving audio
-    if audio is not None and st.session_state.get("last_processed_audio") != audio:
+    # Auto-transcribe
+    if active_audio is not None and st.session_state.get("last_processed_audio") != active_audio:
         try:
             with st.spinner("Understanding your voice with Gnani Prisma..."):
-                transcribed_text = transcribe(audio.getvalue(), "voice.wav", lang_code)
+                fname = getattr(active_audio, "name", "voice.wav")
+                transcribed_text = transcribe(active_audio.getvalue(), fname, lang_code)
                 st.session_state["transcript"] = transcribed_text
-                st.session_state["last_processed_audio"] = audio
+                st.session_state["last_processed_audio"] = active_audio
         except Exception as e:
             st.warning("I couldn't hear that clearly. Please try once more, a bit closer to the mic.")
             st.session_state["transcript"] = ""
@@ -400,7 +443,6 @@ if mode == "📝 Log Expense / Udhar":
         parsed_rows, parsed_udhar = parse_expenses(st.session_state["transcript"])
         
         if parsed_rows or parsed_udhar:
-            # 1. Normal Expenses
             if parsed_rows:
                 st.markdown("##### 🛒 Personal / Daily Expenses:")
                 df_prev = pd.DataFrame(parsed_rows)
@@ -408,7 +450,6 @@ if mode == "📝 Log Expense / Udhar":
                 df_prev["amount_display"] = df_prev["amount"].map(lambda a: f"₹{a:,.0f}")
                 st.dataframe(df_prev[["item", "amount_display", "category"]], use_container_width=True, hide_index=True)
 
-            # 2. Udhar / Khata items
             if parsed_udhar:
                 st.markdown("##### 🤝 Udhar / Khata Entries:")
                 df_udh = pd.DataFrame(parsed_udhar)
@@ -476,6 +517,9 @@ else:
         today_total = df[df["date"] == today]["amount"].sum()
         month_total = month_df["amount"].sum()
 
+    # ---------------- FEATURE: WEEKLY INSIGHT LINE ----------------
+    st.markdown(f'<div class="insight-card">{get_weekly_insight(df)}</div>', unsafe_allow_html=True)
+
     # Hero Card
     st.markdown(f"""
     <div style="background:#0F766E; color:#FFFFFF; border-radius:18px; padding:20px 24px; margin:10px 0 16px 0; box-shadow:0 6px 20px rgba(15,118,110,0.25);">
@@ -484,6 +528,21 @@ else:
       <div style="font-size:1.05rem; opacity:0.95; margin-top:6px; font-weight:500;">{T['month']}: ₹{month_total:,.0f}</div>
     </div>
     """, unsafe_allow_html=True)
+
+    # ---------------- FEATURE: BUDGET NUDGE (80% / 90% THRESHOLD) ----------------
+    col_b1, col_b2 = st.columns([1, 1])
+    with col_b1:
+        user_budget = st.number_input("Monthly Budget Target (₹)", min_value=1000, max_value=200000, value=12000, step=1000)
+    with col_b2:
+        budget_pct = (month_total / user_budget) * 100 if user_budget > 0 else 0
+        st.write("")
+        st.write(f"**Budget Utilization:** {budget_pct:.1f}%")
+        st.progress(min(1.0, budget_pct / 100))
+
+    if budget_pct >= 90:
+        st.markdown(f'<div class="budget-badge" style="background:#FEE2E2; border-color:#EF4444; color:#B91C1C;">⚠️ <b>Budget Alert:</b> You have used {budget_pct:.0f}% of your monthly ₹{user_budget:,.0f} budget!</div>', unsafe_allow_html=True)
+    elif budget_pct >= 80:
+        st.markdown(f'<div class="budget-badge">🔔 <b>Gentle Nudge:</b> You have reached {budget_pct:.0f}% of your ₹{user_budget:,.0f} budget with {30 - today.day} days left this month.</div>', unsafe_allow_html=True)
 
     # ---------------- UDHAR / KHATA LEDGER DISPLAY ----------------
     if not udhar_df.empty:
