@@ -1,9 +1,22 @@
 .env
+.streamlit/secrets.toml
 venv/
+.venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# local data (imported from v1 CSVs on first run)
+data/
+*.db
+*.db-journal
 expenses.csv
+expenses.csv.imported
+udhar_khata.csv
+udhar_khata.csv.imported
+
+# audio artefacts
 *.wav
 *.mp3
 *.m4a
-
+*.ogg

@@ -1,98 +1,170 @@
 # 🎙️ Awaaz Kharcha (आवाज़ खर्चा / ఆవాజ్ ఖర్చు)
-### Voice-First Multilingual Expense Tracker for Indian College Students & Daily Commuters
+
+### Voice-first multilingual expense tracker for Indian students and daily commuters
 
 [![Gnani Prisma](https://img.shields.io/badge/Powered%20By-Gnani%20Prisma%20STT-FF6B00.svg)](https://gnani.ai)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/UI-Streamlit-red.svg)](https://streamlit.io)
-[![Event](https://img.shields.io/badge/Great%20Indian%20AI%20Internship%20Challenge-Nov%208--10%2C%202026-green.svg)](https://gnani.ai)
+[![Tests](https://img.shields.io/badge/tests-pytest-green.svg)](tests/)
 
 > **"Just say what you spent, in your own language. Awaaz Kharcha writes it down, sorts it into categories, and shows where your money went."**
 
 ---
 
-## 🎯 Target Persona: Narrow Audience Focus
-> **"For college students & daily commuters who split canteen chai, samosa, rapido bikes, autos and hostel bills in Hinglish and Telugu."**
-- **The Problem (Razorpay Fix My Itch #90.5):** People stop tracking expenses because typing out every ₹20 chai or ₹60 auto ride is tedious.
-- **The Solution:** Open the mic, speak naturally (*"aaj chai 20, auto 80, lunch biryani 150"*), let **Gnani Prisma** inverse-text-normalize the numerals, auto-categorize, and graph monthly burn.
+## 🎯 Who it is for
+
+College students and daily commuters who split canteen chai, samosas, Rapido bikes, autos and hostel bills — in Hinglish, Telugu or Indian English.
+
+- **The problem (Razorpay Fix My Itch #90.5):** people stop tracking expenses because typing every ₹20 chai or ₹60 auto ride is tedious.
+- **The answer:** speak one sentence — *"aaj chai 20, auto 80, lunch dedh sau, Ravi ko 500 udhar diya"* — and it becomes categorised rows, a monthly burn chart, a khata ledger and a Q&A assistant.
 
 ---
 
-## 🏗️ Architecture & Data Flow
+## ✨ What's inside
+
+| Area | Feature |
+|---|---|
+| **Voice** | Gnani Prisma STT with Inverse Text Normalization (numerals stay digits), live editable transcript before saving |
+| **Voice notes** | Drop a forwarded WhatsApp `.ogg` / `.m4a` / `.mp3` / `.wav` / `.aac` clip instead of recording |
+| **No-mic path** | Type the same natural sentence, or use one-tap chips (Chai ₹20, Auto ₹80, Lunch ₹150, Recharge ₹299…) |
+| **Parsing** | Indian number words (`dedh sau`, `dhai hazar`, `paanch sau`, `रెండు వందలు`, `पाँच सौ`), comma / *aur* / *మరియు* lists, quantities ignored (`2 chai 20` → ₹20), relative dates (`aaj`, `kal`, `parso`, `eeroju`) |
+| **Categories** | Food, Travel, Groceries, Bills, Health, Shopping, Fun, Education, Other |
+| **Khata / Udhar** | Detect *"Ravi ko 500 udhar diya"*, per-person totals of who owes what, one-tap settle / reopen |
+| **Budget** | Persisted monthly budget, progress bar, 80% nudge and 90% alert, "safe to spend today" and per-day allowance for the remaining days |
+| **Insights** | 14-day trend, spending by category, top items, weekday pattern, month-over-month change, logging streak, one-line weekly insight |
+| **Ask** | Voice or typed questions — *"is mahine kitna kharch hua?"*, *"chai pe kitna gaya?"*, *"budget kitna bacha?"*, *"ravi ko kitna udhar?"* — answered offline from local data |
+| **History** | Filter by month, category or item; edit any row inline; delete selected rows |
+| **Data** | SQLite storage with per-row ids, CSV + full JSON export, guarded "clear all" |
+
+Three UI languages: **Hinglish**, **తెలుగు**, **English (IN)** — switchable in one tap.
+
+---
+
+## 🏗️ How it works
 
 ```text
-       🎤 User Voice Input (Hinglish / Telugu / Indian English)
-                               |
-                               v
-            Gnani Prisma STT API (api.vachana.ai/stt/v3)
-              Inverse Text Normalization (digits: 0-9)
-                               |
-                               v
-               Live Editable Transcript Review Box
-              (Instant error correction before saving)
-                               |
-                               v
-               Multilingual Regex Expense Parser
-            (Splits items, amounts, categories & icons)
-                               |
-                               v
-                    expenses.csv (Local Storage)
-                               |
-                               v
-           Visual FinTech Analytics Dashboard & Alerts
-          (Today's sum, month's total, category bar chart, 
-           budget utilization gauge, and CSV export)
+  🎤 voice  ──┐
+              ├──> Gnani Prisma STT (api.vachana.ai/stt/v3)
+  📎 voice ───┘        │  transcript (digits preserved)
+                       v
+              Editable transcript review  ──┐
+                                            │
+  ⌨️ typed sentence ────────────────────────┤
+                                            v
+                               awaaz/parser.py
+                     number words → digits, split, categorise,
+                     relative dates, expense vs udhar rows
+                                            │
+                                            v
+                       awaaz/store.py  (SQLite: expenses, udhar, settings)
+                                            │
+                    ┌───────────────────────┼────────────────────────┐
+                    v                       v                        v
+            awaaz/insights.py        Streamlit UI              CSV / JSON export
+        totals, budget, trends,   hero card, tabs, charts,
+        weekly insight, Q&A       khata ledger, history
 ```
+
+Everything except speech-to-text runs locally. Nothing is uploaded except the audio clip you choose to transcribe.
 
 ---
 
-## 🚀 Quick Setup & Run
+## 🚀 Quick start
 
-### 1. Prerequisites
-- Python 3.10+
-- Valid Gnani AI API Key (configured in `.env`)
-
-### 2. Installation
 ```bash
-# Clone or navigate to the folder
-cd C:\Users\npoor\.gemini\antigravity\scratch\awaaz-kharcha
+git clone https://github.com/PoornaSri26/Awaaz-Kharcha.git
+cd Awaaz-Kharcha
 
-# Install dependencies
+python -m venv .venv
+# Windows: .venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-```
 
-### 3. Run Application
-```bash
+# Gnani Prisma key (only needed for voice input)
+cp .env.example .env      # then edit .env and set GNANI_API_KEY=...
+
 streamlit run app.py
 ```
-Open **[http://localhost:8501](http://localhost:8501)** in your browser.
+
+Open **http://localhost:8501**. Without an API key the app still runs: typing, one-tap chips, khata, insights and Q&A all work; the voice tab explains what is missing.
+
+Optional demo data:
+
+```bash
+python seed_data.py           # seeds only if the database is empty
+python seed_data.py --force   # seed on top of existing rows
+```
+
+Optional key check:
+
+```bash
+python test_stt.py path/to/clip.wav   # or no argument for a silent test clip
+```
 
 ---
 
-## 💡 Real Voice Demo Scripts to Try
+## 🧪 Tests
 
-| Language | Spoken Audio Input | Detected Result |
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
+The suite covers the parser (number words, multi-item sentences, quantities, relative dates, Telugu/English, udhar direction), the SQLite store (CRUD, settlement, settings, export, one-time legacy CSV import) and insights/Q&A (totals, budget levels, zero-filled trends, every question intent, and empty-data safety).
+
+---
+
+## 📁 Project structure
+
+```text
+app.py               Streamlit UI (six tabs, sidebar settings/export)
+awaaz/config.py      env, paths, language codes, thresholds
+awaaz/parser.py      number words, categorisation, expense + udhar parsing
+awaaz/store.py       SQLite persistence, settings, exports, v1 CSV migration
+awaaz/insights.py    totals, budget status, trends, weekly insight, Q&A engine
+awaaz/stt.py         Gnani Prisma client with typed errors
+tests/               pytest suite
+seed_data.py         demo data (relative dates, no absolute paths)
+test_stt.py          API connectivity smoke check
+```
+
+Upgrading from v1? Your old `expenses.csv` and `udhar_khata.csv` are imported into SQLite on first run and renamed `*.csv.imported`, so nothing is lost and nothing is double-counted.
+
+---
+
+## 💡 Voice scripts to try
+
+| Language | Spoken input | Parsed result |
 |---|---|---|
-| **Hinglish** | `"aaj canteen chai 20, auto ka 80, lunch biryani 160, recharge 299"` | 4 items: Food & Chai, Travel, Food, Bills |
-| **Telugu** | `"eeroju tiffin dosa 60, rapido bike 75, medicines 180, evening snacks 45"` | 4 items: Food & Chai, Travel, Health, Food |
-| **English (IN)** | `"metro ticket 40, coffee 60, stationary 120, groceries 350"` | 4 items: Travel, Food, Other, Groceries |
-
-
+| **Hinglish** | `aaj canteen chai 20, auto ka 80, lunch biryani 160, recharge 299` | 4 expenses: Food, Travel, Food, Bills |
+| **Hinglish + khata** | `Ravi ko 500 udhar diya, kal metro 40` | 1 khata entry, 1 backdated travel expense |
+| **Telugu** | `eeroju tiffin dosa 60, rapido bike 75, medicines 180` | 3 expenses: Food, Travel, Health |
+| **English (IN)** | `metro ticket 40, coffee 60, stationary 120, groceries 350` | 4 expenses incl. Education, Groceries |
+| **Question** | `is mahine kitna kharch hua?` / `budget kitna bacha?` | spoken answer from your own data |
 
 ---
 
-## 🏷️ Social Sharing Template (LinkedIn & X)
+## 🔒 Privacy & limits
 
-> I kept forgetting where my money went every month, so I built a voice-first expense tracker. 🎙️💸
->
-> Just say: *"aaj chai 20, auto 80, lunch 150, recharge 299"* — it transcribes, auto-sorts, and graphs your spending in seconds!
->
-> Built in 2 days using **@Gnani.ai's Prisma** speech-to-text model, which handles code-mixed Hinglish and Telugu with remarkable numeral accuracy.
->
-> Inspired by Razorpay's Fix My Itch: *"Why do people struggle to track where their money goes each month?"*
->
-> 🎯 Narrow focus: For college students and daily commuters splitting chai, canteen, and autos.
->
-> Would you use this over traditional expense apps? What language should we support next? 👇
->
-> **#GnaniAI #GreatIndianAIInternshipChallenge**
+- Audio is sent **only** to Gnani Prisma for transcription, and only when you record or upload.
+- Expenses, khata and settings live in `data/awaaz.db` on your machine; `.env`, the database and audio files are git-ignored.
+- Single-user, single-device by design: there is no login or cloud sync yet.
+- Parsing is rule based. It handles the phrasing in the scripts above very well; unusual constructions (*"do chai aur ek samosa, total pachas"*) may need an edit in the transcript box — which is exactly why the transcript is editable before saving.
+- Amounts are rounded to rupees; mixed-currency input is not supported.
 
+---
+
+## 🗺️ Roadmap
+
+- [ ] Weekly/monthly PDF or image share card for WhatsApp
+- [ ] Recurring expenses (rent, recharge) auto-posted
+- [ ] Optional cloud sync with a user account
+- [ ] Per-category budgets
+- [ ] More languages (Tamil, Bengali, Marathi) once validated with native speakers
+
+---
+
+## 🏷️ Built for
+
+**Great Indian AI Internship Challenge** (Nov 8–10, 2026), inspired by Razorpay's *Fix My Itch* #90.5: *"Why do people struggle to track where their money goes each month?"*
+
+Speech recognition by **[Gnani.ai Prisma](https://gnani.ai)**. Built with Streamlit, pandas and SQLite.

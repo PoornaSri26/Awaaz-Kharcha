@@ -1,38 +1,65 @@
+"""Quick connectivity check for the Gnani Prisma STT endpoint.
+
+Usage:  python test_stt.py [path/to/clip.wav]
+
+Without an argument a one-second silent WAV is generated and sent, which is
+enough to confirm that the API key and endpoint work.
+"""
+
+from __future__ import annotations
+
 import os
+import tempfile
+import wave
+
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
+from awaaz import config
 
-API_URL = "https://api.vachana.ai/stt/v3"
-API_KEY = os.environ.get("GNANI_API_KEY", "")
 
-print(f"API Key found: {'Yes (Length: ' + str(len(API_KEY)) + ')' if API_KEY else 'No'}")
-
-# Generate a small silent or dummy wav file for verification if test.wav does not exist
-if not os.path.exists("test.wav"):
-    import wave
-    with wave.open("test.wav", "wb") as wav_file:
+def make_silent_wav(path: str, seconds: int = 1) -> None:
+    with wave.open(path, "wb") as wav_file:
         wav_file.setnchannels(1)
         wav_file.setsampwidth(2)
         wav_file.setframerate(16000)
-        wav_file.writeframes(b'\x00\x00' * 16000) # 1 sec of audio
+        wav_file.writeframes(b"\x00\x00" * 16000 * seconds)
 
-print("Testing API endpoint connection...")
-try:
-    with open("test.wav", "rb") as f:
-        r = requests.post(
-            API_URL,
-            headers={"X-API-Key-ID": API_KEY},
-            files={"audio_file": ("test.wav", f)},
-            data={"language_code": "hi-IN", "format": "transcribe", "itn_native_numerals": "false"},
-            timeout=30,
-        )
-    print("Status Code:", r.status_code)
+
+def main() -> None:
+    key = config.api_key()
+    print(f"API key found: {'yes' if key else 'no'} (endpoint: {config.GNANI_API_URL})")
+    if not key:
+        print("Set GNANI_API_KEY in .env before running this check.")
+        return
+
+    import sys
+
+    clip = sys.argv[1] if len(sys.argv) > 1 else ""
+    temp_path = ""
+    if not clip:
+        handle, temp_path = tempfile.mkstemp(suffix=".wav")
+        os.close(handle)
+        make_silent_wav(temp_path)
+        clip = temp_path
+
     try:
-        print("Response JSON:", r.json())
-    except Exception:
-        print("Raw Response:", r.text)
-except Exception as e:
-    print("Request exception:", e)
+        with open(clip, "rb") as audio:
+            response = requests.post(
+                config.GNANI_API_URL,
+                headers={"X-API-Key-ID": key},
+                files={"audio_file": (os.path.basename(clip), audio)},
+                data={"language_code": "hi-IN", "format": "transcribe", "itn_native_numerals": "false"},
+                timeout=30,
+            )
+        print("Status code:", response.status_code)
+        try:
+            print("Response JSON:", response.json())
+        except ValueError:
+            print("Raw response:", response.text[:500])
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
 
+
+if __name__ == "__main__":
+    main()
