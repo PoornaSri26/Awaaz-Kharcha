@@ -1,5 +1,10 @@
+# secrets — never commit
 .env
+.env.*
+!.env.example
 .streamlit/secrets.toml
+*.pem
+*.key
 venv/
 .venv/
 __pycache__/
@@ -20,3 +25,4 @@ udhar_khata.csv.imported
 *.mp3
 *.m4a
 *.ogg
+*.log

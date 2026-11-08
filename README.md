@@ -147,6 +147,7 @@ Upgrading from v1? Your old `expenses.csv` and `udhar_khata.csv` are imported in
 
 - Audio is sent **only** to Gnani Prisma for transcription, and only when you record or upload.
 - Expenses, khata and settings live in `data/awaaz.db` on your machine; `.env`, the database and audio files are git-ignored.
+- **The API key never leaves `.env`.** `.env.example` documents variable *names* only, the app never renders the key, and API errors are surfaced without request headers. Keep keys in `.env` (or `st.secrets` when deployed), never in code, screenshots, issues or chat — if a key is ever pasted somewhere shared, rotate it in the Gnani console immediately.
 - Single-user, single-device by design: there is no login or cloud sync yet.
 - Parsing is rule based. It handles the phrasing in the scripts above very well; unusual constructions (*"do chai aur ek samosa, total pachas"*) may need an edit in the transcript box — which is exactly why the transcript is editable before saving.
 - Amounts are rounded to rupees; mixed-currency input is not supported.
