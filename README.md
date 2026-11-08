@@ -76,16 +76,7 @@ Open **[http://localhost:8501](http://localhost:8501)** in your browser.
 | **Telugu** | `"eeroju tiffin dosa 60, rapido bike 75, medicines 180, evening snacks 45"` | 4 items: Food & Chai, Travel, Health, Food |
 | **English (IN)** | `"metro ticket 40, coffee 60, stationary 120, groceries 350"` | 4 items: Travel, Food, Other, Groceries |
 
----
 
-## 📹 60-Second Video Presentation Guide
-
-- **0:00 - 0:08:** *"Most of us have no idea where our pocket money vanished by the end of the month. Typing ₹20 chai and ₹80 auto rides is boring, so we quit."*
-- **0:08 - 0:15:** *"Introducing Awaaz Kharcha—built for Indian students and commuters using Gnani AI's Prisma model."*
-- **0:15 - 0:35:** Tap record $\rightarrow$ Say *"aaj chai 20, auto 80, lunch 150, medicine 200"* $\rightarrow$ Watch Prisma transcribe with exact numerals $\rightarrow$ Show the breakdown table.
-- **0:35 - 0:45:** Click **Save** $\rightarrow$ Show today's total, monthly budget progress bar, and category breakdown.
-- **0:45 - 0:55:** Switch to Telugu / Hinglish $\rightarrow$ Highlight real-world noise resilience and live editable transcript correction.
-- **0:55 - 1:00:** *"Built for the Great Indian AI Internship Challenge. #GnaniAI #GreatIndianAIInternshipChallenge"*
 
 ---
 
