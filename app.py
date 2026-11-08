@@ -6,94 +6,116 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
+# Load local environment variables (contains GNANI_API_KEY)
 load_dotenv()
 
-# Gnani Prisma API Configuration
 API_URL = "https://api.vachana.ai/stt/v3"
 API_KEY = os.getenv("GNANI_API_KEY", "")
 DATA_FILE = "expenses.csv"
 
-# Narrow Audience Persona Focus for Contest:
-# "For college students & young hustlers who split chai, canteen, auto & bills in Hinglish / Telugu"
-LANGUAGES = {
-    "Hinglish / Hindi (hi-IN)": "hi-IN",
-    "Telugu (te-IN)": "te-IN",
-    "English - Indian (en-IN)": "en-IN",
-    "Tamil (ta-IN)": "ta-IN",
-    "Kannada (kn-IN)": "kn-IN",
+# ---------------- MULTILINGUAL LOCALIZATION & UI STRINGS ----------------
+UI = {
+    "hi-IN": {
+        "title": "आवाज़ खर्चा",
+        "subtitle": "जो खर्च किया, बस बोलिए। हम लिख लेंगे।",
+        "speak": "बोलिए (Tap & Speak)",
+        "heard": "मैंने यह सुना (Edit if needed)",
+        "save": "खर्चा सेव करें",
+        "today": "आज का खर्च",
+        "month": "इस महीने",
+        "budget": "महीने का बजट",
+        "example": 'जैसे: "आज चाय 20, ऑटो 80, खाना 150, दवाई 200"',
+        "privacy": "🔒 आपकी आवाज़ सिर्फ खर्च लिखने के लिए इस्तेमाल होती है।",
+        "empty_msg": "अभी कोई खर्च दर्ज नहीं है। ऊपर माइक दबाकर बोलिए।",
+        "items_header": "पहचाने गए खर्चे:",
+        "success_toast": "खर्च सफलतापूर्वक सेव हो गया! 👍",
+        "undo": "↩ पिछला खर्च वापस लें (Undo)",
+        "download": "खर्चा डाउनलोड करें (CSV)",
+        "clear_all": "🗑️ सब साफ़ करें"
+    },
+    "te-IN": {
+        "title": "ఆవాజ్ ఖర్చు",
+        "subtitle": "మీరు ఖర్చు పెట్టింది మాట్లాడండి. మేము రాస్తాము.",
+        "speak": "మాట్లాడండి (Tap & Speak)",
+        "heard": "నేను విన్నది (సరిచూసుకోండి)",
+        "save": "ఖర్చులను సేవ్ చేయండి",
+        "today": "ఈ రోజు ఖర్చు",
+        "month": "ఈ నెల మొత్తం",
+        "budget": "నెల బడ్జెట్",
+        "example": 'ఉదా: "ఈరోజు టీ 20, ఆటో 80, భోజనం 150, మందులు 200"',
+        "privacy": "🔒 మీ స్వరం ఖర్చులను లెక్కించడానికి మాత్రమే ఉపయోగించబడుతుంది.",
+        "empty_msg": "ఇంకా ఏమీ నమోదు కాలేదు. పైన మైక్ నొక్కి మాట్లాడండి.",
+        "items_header": "గుర్తించిన ఖర్చులు:",
+        "success_toast": "ఖర్చులు విజయవంతంగా సేవ్ అయ్యాయి! 👍",
+        "undo": "↩ చివరి రికార్డును రద్దు చేయండి (Undo)",
+        "download": "ఖర్చులను డౌన్‌లోడ్ చేయండి (CSV)",
+        "clear_all": "🗑️ డేటా క్లియర్ చేయండి"
+    },
+    "en-IN": {
+        "title": "Awaaz Kharcha",
+        "subtitle": "Say what you spent. We write it down.",
+        "speak": "Tap & Speak",
+        "heard": "What I heard (Edit if needed)",
+        "save": "Save Expenses",
+        "today": "Today's Spent",
+        "month": "This Month",
+        "budget": "Monthly Budget",
+        "example": 'Try: "today tea 20, auto 80, lunch 150, medicine 200"',
+        "privacy": "🔒 Your voice is only used on this device to log your expenses.",
+        "empty_msg": "Nothing yet. Tap the mic above to log your first expense.",
+        "items_header": "Detected Expenses:",
+        "success_toast": "Expenses saved successfully! 👍",
+        "undo": "↩ Undo Last Save",
+        "download": "Download CSV",
+        "clear_all": "🗑️ Clear All"
+    }
 }
 
-# Rich category taxonomy with Hinglish, Telugu, Hindi keywords
+LANG_MAP = {
+    "Hinglish": "hi-IN",
+    "తెలుగు": "te-IN",
+    "English": "en-IN"
+}
+
+# Rich category dictionary with emojis
+CAT_EMOJI = {
+    "Food": "🍵",
+    "Travel": "🛺",
+    "Groceries": "🥬",
+    "Bills": "💡",
+    "Health": "💊",
+    "Shopping": "🛍️",
+    "Fun": "🎬",
+    "Other": "📦"
+}
+
 CATEGORIES = {
-    "Food & Chai": [
-        "chai", "tea", "coffee", "lunch", "dinner", "breakfast", "tiffin", "biryani",
-        "samosa", "snack", "khana", "canteen", "juice", "pani", "water", "food", "maggi",
-        "roll", "dosa", "idli", "shawarma", "burger", "pizza", "momos", "sweets",
-        "టీ", "భోజనం", "టిఫిన్", "చాయ్", "అన్నం", "బిర్యానీ", "దోశ", "ఇడ్లీ", "స్నాక్స్",
-        "चाय", "खाना", "नाश्ता", "समोसा", "बिरयानी"
-    ],
-    "Travel & Commute": [
-        "auto", "bus", "metro", "cab", "ola", "uber", "petrol", "diesel", "fuel",
-        "ticket", "train", "bike", "rapido", "rickshaw", "toll", "parking",
-        "ఆటో", "బస్సు", "పెట్రోల్", "రైలు", "టికెట్", "ర్యాపిడో",
-        "ऑटो", "बस", "पेट्रोल", "किराया", "ट्रेन", "रैपिडो"
-    ],
-    "Groceries & Kirana": [
-        "sabzi", "vegetables", "milk", "doodh", "rice", "atta", "dal", "oil", "grocery",
-        "kirana", "fruits", "bread", "eggs", "curd", "dahi", "chips", "biscuit",
-        "పాలు", "కూరగాయలు", "సరుకులు", "బియ్యం", "నూనె", "గుడ్లు",
-        "सब्ज़ी", "दूध", "राशन", "फल", "किराना", "अंडे"
-    ],
-    "Recharge & Bills": [
-        "recharge", "bill", "electricity", "current", "wifi", "rent", "gas", "cylinder",
-        "hotstar", "netflix", "prime", "subscription",
-        "రీఛార్జ్", "బిల్లు", "అద్దె", "కరెంట్", "వైఫై",
-        "रिचार्ज", "बिल", "किराया", "बिजली", "सिलेंडर"
-    ],
-    "Health & Meds": [
-        "medicine", "tablet", "doctor", "hospital", "dawai", "pharmacy", "clinic",
-        "bandage", "syrup",
-        "మందులు", "డాక్టర్", "ఆసుపత్రి", "దవాఖాన",
-        "दवाई", "डॉक्टर", "अस्पताल", "गोली"
-    ],
-    "Shopping & Lifestyle": [
-        "clothes", "shirt", "shoes", "dress", "kapde", "mobile", "jeans", "earphones",
-        "amazon", "flipkart", "myntra", "tshirt",
-        "బట్టలు", "చెప్పులు", "షర్టు", "షాపింగ్",
-        "कपड़े", "जूते", "शॉपिंग", "शर्ट"
-    ],
-    "Fun & Entertainment": [
-        "movie", "cinema", "game", "party", "outing", "treat", "theatre", "popcorn",
-        "సినిమా", "పార్టీ", "ట్రీట్", "ఆటలు",
-        "फिल्म", "सिनेमा", "पार्टी", "घूमना"
-    ],
-}
-
-CATEGORY_ICONS = {
-    "Food & Chai": "☕",
-    "Travel & Commute": "🛺",
-    "Groceries & Kirana": "🛒",
-    "Recharge & Bills": "📱",
-    "Health & Meds": "💊",
-    "Shopping & Lifestyle": "🛍️",
-    "Fun & Entertainment": "🎉",
-    "Other": "📝"
+    "Food": ["chai", "tea", "coffee", "lunch", "dinner", "breakfast", "tiffin", "biryani",
+             "samosa", "snack", "khana", "canteen", "juice", "pani", "water", "food",
+             "టీ", "భోజనం", "టిఫిన్", "చాయ్", "అన్నం", "బిర్యానీ", "చाय", "खाना", "नाश्ता"],
+    "Travel": ["auto", "bus", "metro", "cab", "ola", "uber", "petrol", "diesel", "fuel",
+               "ticket", "train", "bike", "rapido", "ఆటో", "బస్సు", "పెట్రోల్", "రైలు", "ऑटो", "बस", "पेट्रोल"],
+    "Groceries": ["sabzi", "vegetables", "milk", "doodh", "rice", "atta", "dal", "oil", "grocery",
+                  "kirana", "fruits", "పాలు", "కూరగాయలు", "సరుకులు", "सब्ज़ी", "दूध", "राशन"],
+    "Bills": ["recharge", "bill", "electricity", "current", "wifi", "rent", "gas", "cylinder",
+              "రీఛార్జ్", "బిల్లు", "అద్దె", "రిచార్జ్", "रिचार्ज", "बिल", "किराया"],
+    "Health": ["medicine", "tablet", "doctor", "hospital", "dawai", "మందులు", "డాక్టర్", "దవాఖాన", "दवाई", "दवा"],
+    "Shopping": ["clothes", "shirt", "shoes", "dress", "kapde", "mobile", "బట్టలు", "షాపింగ్", "कपड़े", "जूते"],
+    "Fun": ["movie", "cinema", "game", "party", "outing", "సినిమా", "పార్టీ", "फिल्म", "पार्टी"],
 }
 
 FILLER = (
     r"\b(rupees?|rupaye|rupaiye|rupay|rs|ka|ke|ki|ko|me|mein|pe|liye|for|on|spent|"
-    r"aaj|today|kharcha|kharch|paid|gaye|gaya|hua|diya|diye|pettanu|ayindi|karchu)\b|"
-    r"₹|రూపాయలు|రూపాయి|ఖర్చు|అయింది|రెండు|रुपये|रुपए|खर्च|दिया"
+    r"aaj|today|kharcha|kharch|paid|gaye|gaya|hua|diye|karchu|pettanu|ayindi)\b|"
+    r"₹|రూపాయలు|రూపాయి|ఖర్చు|అయింది|रुपये|रुपए|खर्च"
 )
-
-SPLITTERS = r",|\band\b|\baur\b|\bphir\b|\bthen\b|\binka\b|\bandaru\b|और|మరియు|ఇంకా|\.(?!\d)|।|\n|;"
+SPLITTERS = r",|\band\b|\baur\b|\bphir\b|\bthen\b|\binka\b|और|మరియు|ఇంకా|\.(?!\d)|।|\n|;"
 
 
 def transcribe(audio_bytes: bytes, filename: str, language_code: str) -> str:
-    """Send voice recording to Gnani Prisma STT v3."""
+    """Call Gnani Prisma STT v3 with ITN numerals."""
     if not API_KEY:
-        raise RuntimeError("GNANI_API_KEY is not set. Please check your environment or .env file.")
-    
+        raise RuntimeError("GNANI_API_KEY is not configured.")
     resp = requests.post(
         API_URL,
         headers={"X-API-Key-ID": API_KEY},
@@ -101,19 +123,16 @@ def transcribe(audio_bytes: bytes, filename: str, language_code: str) -> str:
         data={
             "language_code": language_code,
             "format": "transcribe",
-            "itn_native_numerals": "false"  # Keep 0-9 digits for clean regex parsing
+            "itn_native_numerals": "false"  # digits as 0-9
         },
         timeout=60,
     )
     if resp.status_code != 200:
-        raise RuntimeError(f"Gnani API Error ({resp.status_code}): {resp.text}")
-    
-    data = resp.json()
-    return data.get("transcript", "").strip()
+        raise RuntimeError(f"Gnani Error {resp.status_code}: {resp.text}")
+    return resp.json().get("transcript", "").strip()
 
 
 def categorize(text: str) -> str:
-    """Classify expense item by matching Hinglish / Telugu keywords."""
     t = text.lower()
     for cat, words in CATEGORIES.items():
         if any(w in t for w in words):
@@ -122,37 +141,22 @@ def categorize(text: str) -> str:
 
 
 def parse_expenses(text: str):
-    """
-    Parses natural multilingual voice notes into structured expenses.
-    e.g. 'aaj chai ke 20 rupaye, auto ka 80, lunch 150, medicine 200'
-    """
     rows = []
     if not text:
         return rows
-
     chunks = re.split(SPLITTERS, text, flags=re.I)
     for chunk in chunks:
         chunk = chunk.strip()
-        if not chunk:
-            continue
-        
-        # Extract numerical amount (e.g. 20, 80.50)
         m = re.search(r"\d+(?:\.\d+)?", chunk)
         if not m:
             continue
-        
         amount = float(m.group())
-        # Clean item name by stripping numbers and conversational stop words
         item = re.sub(r"\d+(?:\.\d+)?", " ", chunk)
         item = re.sub(FILLER, " ", item, flags=re.I)
-        item = re.sub(r"\s+", " ", item).strip().capitalize()
-        
-        if not item or len(item) < 2:
-            item = "General Expense"
-            
+        item = re.sub(r"\s+", " ", item).strip() or "General"
         rows.append({
             "date": dt.date.today().isoformat(),
-            "item": item,
+            "item": item.capitalize(),
             "amount": amount,
             "category": categorize(chunk),
         })
@@ -169,276 +173,251 @@ def load_data() -> pd.DataFrame:
 
 
 def save_rows(rows):
-    existing = load_data()
-    updated = pd.concat([existing, pd.DataFrame(rows)], ignore_index=True)
-    updated.to_csv(DATA_FILE, index=False)
+    df = pd.concat([load_data(), pd.DataFrame(rows)], ignore_index=True)
+    df.to_csv(DATA_FILE, index=False)
 
 
-# ---------------- UI CONFIGURATION ----------------
-st.set_page_config(
-    page_title="Awaaz Kharcha - Voice Expense Tracker",
-    page_icon="🎙️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# ---------------- PAGE SETUP & THEME ----------------
+st.set_page_config(page_title="Awaaz Kharcha", page_icon="🎙️", layout="centered")
 
-# Custom Styling for polished FinTech look
+# Research-Backed CSS for Low-Friction 1-Page Layout
 st.markdown("""
 <style>
-    .main-title {
-        font-size: 2.3rem !important;
-        font-weight: 800;
-        margin-bottom: 0px;
-        background: -webkit-linear-gradient(45deg, #FF6B00, #FFAE00);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .badge-pill {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        background: rgba(255, 107, 0, 0.15);
-        color: #FF8800;
-        border: 1px solid rgba(255, 107, 0, 0.3);
-        margin-bottom: 12px;
-    }
-    .metric-box {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 16px;
-    }
-    .stButton>button {
-        border-radius: 10px;
-        font-weight: 600;
-    }
+.block-container { 
+    max-width: 720px; 
+    padding-top: 1.2rem; 
+    padding-bottom: 3rem;
+}
+html, body, [class*="css"] { 
+    font-size: 17px; 
+}
+
+/* Big, thumb-friendly touch targets (min 52px) */
+.stButton > button, .stDownloadButton > button {
+    min-height: 52px; 
+    font-size: 1.05rem; 
+    font-weight: 600; 
+    border-radius: 14px;
+    width: 100%;
+}
+
+/* Central Prominent Mic Card styling */
+.st-key-mic {
+    background: #FFFFFF; 
+    border: 2px dashed #0F766E; 
+    border-radius: 18px;
+    padding: 14px; 
+    margin: 8px 0 6px 0;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
+}
+
+/* Metric card numbers */
+[data-testid="stMetricValue"] { 
+    font-size: 2.3rem; 
+    font-weight: 800; 
+    color: #0F766E;
+}
+
+/* Hide Streamlit default clutter for clean demo */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- SIDEBAR ----------------
-with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/microphone.png", width=64)
-    st.markdown("### 🎙️ **Awaaz Kharcha**")
-    st.caption("Voice-first expense tracking for India")
-    
-    st.markdown('<div class="badge-pill">⚡ Powered by Gnani Prisma STT</div>', unsafe_allow_html=True)
-    
-    st.markdown("**Persona Target:**")
-    st.info("🎯 *For college students & daily commuters splitting chai, canteen, autos & bills in Hinglish/Telugu.*")
 
+# ---------------- HEADER ----------------
+col_h1, col_h2 = st.columns([4, 1])
+with col_h1:
+    st.markdown("<h2 style='margin:0; font-weight:800; color:#0F766E;'>🎙️ Awaaz Kharcha</h2>", unsafe_allow_html=True)
+    st.caption("Say what you spent. We write it down. Powered by Gnani Prisma.")
+
+with col_h2:
+    with st.popover("ℹ️ Help"):
+        st.markdown("""
+        **How it works:**
+        1. Select your spoken language.
+        2. Tap the mic and say: *"chai 20, auto 80, lunch 150"*.
+        3. Review what was heard, edit if needed, and tap Save!
+        """)
+
+
+# ---------------- STEP 1: ONE-TAP LANGUAGE SELECTOR ----------------
+try:
+    lang_choice = st.segmented_control(
+        "Language",
+        options=["Hinglish", "తెలుగు", "English"],
+        default="Hinglish",
+        label_visibility="collapsed"
+    )
+except AttributeError:
+    lang_choice = st.radio(
+        "Language",
+        options=["Hinglish", "తెలుగు", "English"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+
+selected_lang = lang_choice or "Hinglish"
+lang_code = LANG_MAP.get(selected_lang, "hi-IN")
+T = UI[lang_code]
+
+
+# ---------------- PROGRESS HINT ----------------
+step = 1 if "transcript" not in st.session_state else 2
+labels = ["① Speak", "② Check", "③ Save"]
+html_stepper = " &nbsp;→&nbsp; ".join(
+    f"<b style='color:#0F766E; font-size:1.05rem;'>{l}</b>" if i + 1 == step 
+    else f"<span style='color:#6B7280;'>{l}</span>"
+    for i, l in enumerate(labels)
+)
+st.markdown(f"<div style='margin: 10px 0;'>{html_stepper}</div>", unsafe_allow_html=True)
+
+
+# ---------------- STEP 2: THE GIANT MIC CARD ----------------
+st.markdown(f"#### 🎙️ {T['speak']}")
+audio = st.audio_input("Record your expenses", key="mic", label_visibility="collapsed")
+
+col_info1, col_info2 = st.columns([3, 2])
+with col_info1:
+    st.caption(f"💡 {T['example']}")
+with col_info2:
+    st.caption(T['privacy'])
+
+
+# Process audio automatically on capture
+if audio is not None:
+    # Trigger transcription if this is a newly recorded audio
+    if st.session_state.get("last_processed_audio") != audio:
+        try:
+            with st.spinner("Understanding your voice with Gnani Prisma..."):
+                transcribed_text = transcribe(audio.getvalue(), "voice.wav", lang_code)
+                st.session_state["transcript"] = transcribed_text
+                st.session_state["last_processed_audio"] = audio
+        except Exception as e:
+            st.warning("I couldn't hear that clearly. Please try once more, a bit closer to the mic.")
+            st.session_state["transcript"] = ""
+
+
+# ---------------- STEP 3: CHECK & CONFIRM (EDITABLE) ----------------
+if st.session_state.get("transcript"):
     st.divider()
-    st.markdown("#### 🌐 Recognition Engine")
-    lang_label = st.selectbox("Speech Language", list(LANGUAGES.keys()), index=0)
-    lang_code = LANGUAGES[lang_label]
-
-    st.markdown("#### 💡 Quick Voice Test Samples")
-    st.markdown("""
-    - *Hinglish:*  
-      `"aaj chai 20, auto ka 80, lunch 150, recharge 299"`
-    - *Telugu:*  
-      `"eeroju tiffin 50, auto 60, biryani 220 karchu"`
-    - *Daily Hustle:*  
-      `"bus ticket 25, snacks 40, petrol 200, dawai 110"`
-    """)
-
-    st.divider()
-    monthly_budget = st.number_input("Monthly Budget (₹)", min_value=500, max_value=200000, value=12000, step=500)
+    st.markdown(f"#### 📝 {T['heard']}")
     
-    st.caption("Great Indian AI Internship Challenge 2026")
+    # Editable transcript
+    current_val = st.session_state["transcript"]
+    user_edited = st.text_area(
+        label="Edit transcript",
+        value=current_val,
+        height=85,
+        label_visibility="collapsed"
+    )
+    if user_edited != current_val:
+        st.session_state["transcript"] = user_edited
 
-
-# ---------------- MAIN CONTENT ----------------
-col_head1, col_head2 = st.columns([3, 1])
-with col_head1:
-    st.markdown('<h1 class="main-title">🎙️ Awaaz Kharcha</h1>', unsafe_allow_html=True)
-    st.write("**Just say what you spent in your language.** We transcribe it, categorize it, and graph your money.")
-
-with col_head2:
-    st.write("")
-    st.metric("Engine Status", "Gnani Prisma ⚡", "Active (hi/te/en)")
-
-tab_record, tab_samples, tab_history = st.tabs(["🗣️ Voice Input & Splitter", "🧪 Quick Pre-recorded Samples", "📜 Full Expense Log"])
-
-with tab_record:
-    col_input1, col_input2 = st.columns([1, 1])
-    
-    with col_input1:
-        st.subheader("1. Speak or Upload Voice Note")
-        audio_rec = st.audio_input("Tap the mic icon and speak your expenses:")
-        audio_file = st.file_uploader("...or drop a voice note (wav / mp3 / m4a):", type=["wav", "mp3", "m4a", "ogg"])
-        
-        active_audio = audio_rec or audio_file
-        
-        btn_transcribe = st.button("🚀 Transcribe with Gnani Prisma", type="primary", use_container_width=True)
-
-    with col_input2:
-        st.subheader("2. Speech to Text Result")
-        
-        if active_audio is not None and btn_transcribe:
-            try:
-                with st.spinner("Prisma Neural STT is listening and formatting digits..."):
-                    audio_bytes = active_audio.getvalue()
-                    fname = getattr(active_audio, "name", "recording.wav")
-                    transcript_text = transcribe(audio_bytes, fname, lang_code)
-                    st.session_state["transcript"] = transcript_text
-                    st.toast("Transcribed with Gnani Prisma!", icon="✅")
-            except Exception as e:
-                st.error(f"Transcription failed: {e}")
-
-        # Editable Transcript box
-        current_transcript = st.session_state.get("transcript", "")
-        edited_text = st.text_area(
-            "What I heard (live editable before saving):",
-            value=current_transcript,
-            placeholder="e.g. aaj chai 20, auto 80, lunch 150",
-            height=110
-        )
-        if edited_text != current_transcript:
-            st.session_state["transcript"] = edited_text
-
-    # Parsed Items Preview
-    if st.session_state.get("transcript", "").strip():
-        st.subheader("3. Detected Expense Breakdown")
-        detected_rows = parse_expenses(st.session_state["transcript"])
-        
-        if detected_rows:
-            parsed_df = pd.DataFrame(detected_rows)
-            parsed_df["Icon"] = parsed_df["category"].map(lambda c: CATEGORY_ICONS.get(c, "📝"))
-            
-            c_disp1, c_disp2 = st.columns([2, 1])
-            with c_disp1:
-                st.dataframe(
-                    parsed_df[["Icon", "item", "amount", "category"]],
-                    column_config={
-                        "Icon": st.column_config.TextColumn("", width="small"),
-                        "item": st.column_config.TextColumn("Item / Kharcha"),
-                        "amount": st.column_config.NumberColumn("Amount (₹)", format="₹%.2f"),
-                        "category": st.column_config.TextColumn("Category"),
-                    },
-                    use_container_width=True,
-                    hide_index=True
-                )
-            
-            with c_disp2:
-                total_detected = sum(r["amount"] for r in detected_rows)
-                st.metric("Total in this Note", f"₹{total_detected:,.2f}", f"{len(detected_rows)} items")
-                if st.button("💾 Confirm & Save to Dashboard", type="primary", use_container_width=True):
-                    save_rows(detected_rows)
-                    st.session_state.pop("transcript", None)
-                    st.success(f"Saved {len(detected_rows)} expenses totaling ₹{total_detected:,.0f}!")
-                    st.rerun()
-        else:
-            st.info("💡 No numerical amounts detected in this phrase. Try saying digits clearly (e.g. 'chai 20, auto 80').")
-
-with tab_samples:
-    st.subheader("Try Instant Demo Audio Samples (Pre-configured)")
-    st.write("Click any sample to quickly populate the parser and test categories:")
-    
-    sample_col1, sample_col2, sample_col3 = st.columns(3)
-    
-    with sample_col1:
-        st.markdown("**Sample 1: College Day (Hinglish)**")
-        st.caption('"aaj canteen chai 20, auto ka 80, lunch biryani 160, metro card recharge 200"')
-        if st.button("Load Sample 1"):
-            st.session_state["transcript"] = "aaj canteen chai 20, auto ka 80, lunch biryani 160, metro card recharge 200"
-            st.rerun()
-
-    with sample_col2:
-        st.markdown("**Sample 2: Telugu Daily Commute**")
-        st.caption('"eeroju tiffin dosa 60, rapido bike 75, medicines 180, evening snacks 45"')
-        if st.button("Load Sample 2"):
-            st.session_state["transcript"] = "eeroju tiffin dosa 60, rapido bike 75, medicines 180, evening snacks 45"
-            st.rerun()
-
-    with sample_col3:
-        st.markdown("**Sample 3: Weekend Outing & Groceries**")
-        st.caption('"movie ticket 250, popcorn 120, sabzi and milk 140, cab 190"')
-        if st.button("Load Sample 3"):
-            st.session_state["transcript"] = "movie ticket 250, popcorn 120, sabzi and milk 140, cab 190"
-            st.rerun()
-
-# ---------------- SPENDING DASHBOARD ----------------
-st.divider()
-st.subheader("📊 Spending Intelligence & Budget Tracking")
-
-df_expenses = load_data()
-
-if df_expenses.empty:
-    st.info("No recorded expenses yet. Speak into the microphone above to log your first kharcha!")
-else:
-    df_expenses["date"] = pd.to_datetime(df_expenses["date"])
-    today = pd.Timestamp.today().normalize()
-    
-    today_mask = df_expenses["date"] == today
-    month_mask = (df_expenses["date"].dt.month == today.month) & (df_expenses["date"].dt.year == today.year)
-    
-    today_sum = df_expenses[today_mask]["amount"].sum()
-    month_sum = df_expenses[month_mask]["amount"].sum()
-    total_count = len(df_expenses)
-    
-    # Budget Progress
-    budget_pct = (month_sum / monthly_budget) * 100 if monthly_budget > 0 else 0
-
-    # KPI Metrics Row
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    kpi1.metric("Today's Kharcha", f"₹{today_sum:,.0f}", f"{df_expenses[today_mask].shape[0]} items")
-    kpi2.metric("This Month", f"₹{month_sum:,.0f}", f"{budget_pct:.1f}% of budget")
-    kpi3.metric("Monthly Budget", f"₹{monthly_budget:,.0f}", f"₹{max(0, monthly_budget - month_sum):,.0f} left")
-    kpi4.metric("Logged Entries", f"{total_count} transactions", "Lifetime")
-
-    # Budget Warning Alert
-    if budget_pct >= 90:
-        st.error(f"⚠️ Budget Alert: You have utilized {budget_pct:.1f}% of your monthly ₹{monthly_budget:,.0f} budget!")
-    elif budget_pct >= 75:
-        st.warning(f"⚡ Caution: You have crossed {budget_pct:.1f}% of your monthly ₹{monthly_budget:,.0f} budget.")
-
-    # Charts Row
-    chart_col1, chart_col2 = st.columns([1, 1])
-    
-    month_df = df_expenses[month_mask]
-    if not month_df.empty:
-        cat_group = month_df.groupby("category")["amount"].sum().reset_index()
-        
-        with chart_col1:
-            st.markdown("##### 📌 Spending by Category (This Month)")
-            st.bar_chart(cat_group.set_index("category")["amount"], color="#FF6B00", height=280)
-            
-        with chart_col2:
-            st.markdown("##### 📅 Daily Spending Trend")
-            daily_group = month_df.groupby(month_df["date"].dt.strftime("%d %b"))["amount"].sum()
-            st.line_chart(daily_group, height=280)
-
-with tab_history:
-    st.subheader("Transaction History")
-    if not df_expenses.empty:
-        hist_df = df_expenses.sort_values("date", ascending=False).copy()
-        hist_df["date"] = hist_df["date"].dt.strftime("%Y-%m-%d")
+    # Parse rows
+    parsed_rows = parse_expenses(st.session_state["transcript"])
+    if parsed_rows:
+        # Format table with friendly emojis
+        df_preview = pd.DataFrame(parsed_rows)
+        df_preview["category"] = df_preview["category"].map(lambda c: f"{CAT_EMOJI.get(c, '📦')} {c}")
+        df_preview["amount_display"] = df_preview["amount"].map(lambda a: f"₹{a:,.0f}")
         
         st.dataframe(
-            hist_df,
+            df_preview[["item", "amount_display", "category"]],
             column_config={
-                "date": "Date",
-                "item": "Item",
-                "amount": st.column_config.NumberColumn("Amount (₹)", format="₹%.2f"),
-                "category": "Category",
+                "item": "Kharcha / Item",
+                "amount_display": "Amount",
+                "category": "Category"
             },
             use_container_width=True,
             hide_index=True
         )
-        
-        c_down1, c_down2 = st.columns([1, 3])
-        with c_down1:
-            st.download_button(
-                "📥 Download CSV Export",
-                data=hist_df.to_csv(index=False),
-                file_name=f"awaaz_kharcha_{dt.date.today().isoformat()}.csv",
-                mime="text/csv"
-            )
-        with c_down2:
-            if st.button("🗑️ Reset All Expenses (Clear Log)"):
-                if os.path.exists(DATA_FILE):
-                    os.remove(DATA_FILE)
-                st.success("Expense log cleared.")
+
+        col_save, col_redo = st.columns([3, 1])
+        with col_save:
+            btn_save = st.button(f"✅ {T['save']} ({len(parsed_rows)} items)", type="primary")
+            if btn_save:
+                save_rows(parsed_rows)
+                st.session_state["last_saved_n"] = len(parsed_rows)
+                st.session_state.pop("transcript", None)
+                st.toast(T["success_toast"], icon="👍")
                 st.rerun()
+
+        with col_redo:
+            if st.button("↩ Redo"):
+                st.session_state.pop("transcript", None)
+                st.rerun()
+    else:
+        st.info("I couldn't catch an amount. Please try again with clear numbers, e.g. 'chai 20'.")
+
+
+# ---------------- STEP 4: HERO SPENDING INTELLIGENCE ----------------
+st.divider()
+df = load_data()
+
+if df.empty:
+    st.info(T["empty_msg"])
+else:
+    df["date"] = pd.to_datetime(df["date"])
+    today = pd.Timestamp.today().normalize()
+    month_df = df[(df["date"].dt.month == today.month) & (df["date"].dt.year == today.year)]
+    
+    today_total = df[df["date"] == today]["amount"].sum()
+    month_total = month_df["amount"].sum()
+
+    # Hero card with high-contrast palette
+    st.markdown(f"""
+    <div style="background:#0F766E; color:#FFFFFF; border-radius:18px; padding:20px 24px; margin:10px 0 16px 0; box-shadow:0 6px 20px rgba(15,118,110,0.25);">
+      <div style="font-size:0.95rem; opacity:0.9; font-weight:600;">{T['today']}</div>
+      <div style="font-size:2.8rem; font-weight:800; line-height:1.1; margin:4px 0;">₹{today_total:,.0f}</div>
+      <div style="font-size:1.05rem; opacity:0.95; margin-top:6px; font-weight:500;">{T['month']}: ₹{month_total:,.0f}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Budget progress indicator
+    DEFAULT_BUDGET = 12000
+    budget_pct = (month_total / DEFAULT_BUDGET) * 100
+    if budget_pct >= 90:
+        st.warning(f"⚠️ Budget Alert: You have used {budget_pct:.0f}% of your monthly ₹{DEFAULT_BUDGET:,.0f} budget.")
+
+    # Category Bar Chart
+    if not month_df.empty:
+        st.markdown("##### 📊 " + ("खर्च श्रेणियां" if lang_code == "hi-IN" else ("ఖర్చు వర్గాలు" if lang_code == "te-IN" else "Spending by Category")))
+        cat_data = month_df.groupby("category")["amount"].sum()
+        st.bar_chart(cat_data, color="#0F766E", height=230)
+
+    # Undo Action & Table List
+    col_act1, col_act2, col_act3 = st.columns([2, 2, 2])
+    
+    # Undo button
+    if st.session_state.get("last_saved_n"):
+        with col_act1:
+            if st.button(T["undo"]):
+                df_curr = load_data()
+                n = st.session_state["last_saved_n"]
+                df_curr.iloc[:-n].to_csv(DATA_FILE, index=False)
+                st.session_state["last_saved_n"] = 0
+                st.toast("Undone!", icon="↩")
+                st.rerun()
+
+    with col_act2:
+        st.download_button(
+            label=T["download"],
+            data=df.to_csv(index=False),
+            file_name=f"awaaz_kharcha_{dt.date.today().isoformat()}.csv",
+            mime="text/csv"
+        )
+
+    with col_act3:
+        if st.button(T["clear_all"]):
+            if os.path.exists(DATA_FILE):
+                os.remove(DATA_FILE)
+            st.rerun()
+
+    # Quick collapsible transaction log
+    with st.expander("📜 " + ("लेनदेन इतिहास" if lang_code == "hi-IN" else ("లావాదేవీల చరిత్ర" if lang_code == "te-IN" else "Transaction History"))):
+        display_df = df.sort_values("date", ascending=False).copy()
+        display_df["date"] = display_df["date"].dt.strftime("%Y-%m-%d")
+        display_df["category"] = display_df["category"].map(lambda c: f"{CAT_EMOJI.get(c, '📦')} {c}")
+        display_df["amount"] = display_df["amount"].map(lambda a: f"₹{a:,.0f}")
+        st.dataframe(display_df, use_container_width=True, hide_index=True)

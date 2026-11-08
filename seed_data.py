@@ -13,3 +13,4 @@ samples = [
 
 pd.DataFrame(samples).to_csv("C:/Users/npoor/.gemini/antigravity/scratch/awaaz-kharcha/expenses.csv", index=False)
 print("Seeded sample expenses.csv successfully.")
+
