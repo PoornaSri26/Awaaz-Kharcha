@@ -5,6 +5,7 @@ Run with:  streamlit run app.py
 
 from __future__ import annotations
 
+import calendar
 import datetime as dt
 import hashlib
 
@@ -126,6 +127,97 @@ UI = {
 
 CATEGORY_CHOICES = EXPENSE_CATEGORIES
 
+#: Chrome that used to be English-only, now translated for every language.
+EXTRA = {
+    "hi-IN": {
+        "settings": "सेटिंग्स", "export": "एक्सपोर्ट", "expenses_csv": "खर्च CSV",
+        "backup_json": "पूरा बैकअप (JSON)", "restore_header": "बैकअप वापस लाएँ",
+        "restore_hint": "पहले JSON बैकअप चुनिए, फिर तय कीजिए।",
+        "restore_preview": "इस बैकअप में हैं", "restore_replaces": "वापस लाने पर इस डिवाइस का मौजूदा डेटा बदल जाएगा।",
+        "restore_confirm": "मेरा डेटा इस बैकअप से बदल दो", "restore_now": "वापस लाएँ",
+        "restore_done": "बैकअप वापस आ गया", "danger": "खतरनाक ज़ोन",
+        "danger_hint": "इस डिवाइस के सारे खर्च और खाता एंट्री हट जाएँगे।",
+        "danger_confirm": "समझ गया, सब हटा दो", "cleared": "सारा डेटा हट गया",
+        "manual_header": "एक एंट�्री हाथ से जोड़ें (सही रकम, कोई भी तारीख)",
+        "what": "क्या खरीदा?", "amount": "रकम (₹)", "category": "श्रेणी",
+        "date": "तारीख", "add_expense": "खर्च जोड़ें",
+        "need_desc": "नाम और शून्य से ज़्यादा रकम भरिए।",
+        "owe_me": "मुझे मिलने हैं", "i_owe": "मुझे देने हैं", "people_pending": "लोग बाकी",
+        "all_entries": "सारी एंट्री", "add_khata": "खाता एंट्री जोड़ें", "person": "किसका नाम",
+        "type": "तरह", "add_entry": "एंट्री जोड़ें", "need_khata": "नाम और रकम भरिए।",
+        "paid": "चुका दिया", "remaining": "बाकी", "record_payment": "भुगतान दर्ज करें",
+        "payment_amount": "भुगतान (₹)", "need_payment": "पहले भुगतान की रकम भरिए।",
+        "pick_one": "भुगतान के लिए एक ही एंट्री चुनिए।", "edit_entry": "एंट्री सुधारें",
+        "save_edits": "बदलाव सेव करें", "updated": "बदलाव सेव हो गए", "delete": "हटाएँ",
+        "deleted": "हटा दिया", "settled_toast": "भुगतान हो गया", "reopen_toast": "फिर बाकी में डाल दिया",
+        "view_month": "कौन सा महीना", "this_month": "यह महीना", "last_14": "पिछले 14 दिन",
+        "by_category": "श्रेणी के हिसाब से खर्च", "top_items": "सबसे बड़े खर्च",
+        "patterns": "पैटर्न", "streak": "लगातार दिन", "no_items": "इस महीने अभी कुछ नहीं।",
+        "month_filter": "महीना", "search_item": "नाम खोजें", "all_option": "सब",
+        "delete_selected": "चुनी हुई हटाएँ", "entries": "एंट्री",
+        "no_match": "इन फ़िल्टर से कुछ नहीं मिला।", "you_asked": "आपने पूछा",
+        "ask_placeholder": "इस महीने कितना खर्च हुआ?",
+    },
+    "te-IN": {
+        "settings": "సెట్టింగ్‌లు", "export": "ఎక్స్‌పోర్ట్", "expenses_csv": "ఖర్చుల CSV",
+        "backup_json": "పూర్తి బ్యాకప్ (JSON)", "restore_header": "బ్యాకప్ తిరిగి తీసుకోండి",
+        "restore_hint": "మొదట JSON బ్యాకప్ ఎంచుకోండి, తరువాత నిర్ణయించండి.",
+        "restore_preview": "ఈ బ్యాకప్‌లో ఉన్నవి", "restore_replaces": "తిరిగి తీసుకుంటే ఈ పరికరంలోని డేటా మారిపోతుంది.",
+        "restore_confirm": "నా డేటాను ఈ బ్యాకప్‌తో మార్చండి", "restore_now": "తిరిగి తీసుకోండి",
+        "restore_done": "బ్యాకప్ తిరిగి వచ్చింది", "danger": "ప్రమాద ప్రాంతం",
+        "danger_hint": "ఈ పరికరంలోని అన్ని ఖర్చులు, ఖాతా ఎంట్రీలు తొలగిపోతాయి.",
+        "danger_confirm": "అర్థమైంది, అన్నీ తొలగించండి", "cleared": "డేటా తొలగించబడింది",
+        "manual_header": "ఒక ఎంట్రీని చేతితో జోడించండి (ఖచ్చితమైన మొత్తం, ఏ తారీఖు అయినా)",
+        "what": "ఏమి కొన్నారు?", "amount": "మొత్తం (₹)", "category": "వర్గం",
+        "date": "తారీఖు", "add_expense": "ఖర్చు జోడించండి",
+        "need_desc": "పేరు మరియు సున్నా కంటే ఎక్కువ మొత్తం ఇవ్వండి.",
+        "owe_me": "నాకు రావాల్సినవి", "i_owe": "నేను ఇవ్వాల్సినవి", "people_pending": "మంది పెండింగ్",
+        "all_entries": "అన్ని ఎంట్రీలు", "add_khata": "ఖాతా ఎంట్రీ జోడించండి", "person": "ఎవరు",
+        "type": "రకం", "add_entry": "ఎంట్రీ జోడించండి", "need_khata": "పేరు మరియు మొత్తం ఇవ్వండి.",
+        "paid": "చెల్లించినది", "remaining": "మిగిలినది", "record_payment": "చెల్లింపు నమోదు చేయండి",
+        "payment_amount": "చెల్లింపు (₹)", "need_payment": "మొదట చెల్లింపు మొత్తం ఇవ్వండి.",
+        "pick_one": "చెల్లింపు కోసం ఒక ఎంట్రీ మాత్రమే ఎంచుకోండి.", "edit_entry": "ఎంట్రీ సవరించండి",
+        "save_edits": "మార్పులు సేవ్ చేయండి", "updated": "మార్పులు సేవ్ అయ్యాయి", "delete": "తొలగించండి",
+        "deleted": "తొలగించబడింది", "settled_toast": "చెల్లించినట్టు గుర్తించారు", "reopen_toast": "మళ్ళీ పెండింగ్‌లో ఉంది",
+        "view_month": "ఏ నెల", "this_month": "ఈ నెల", "last_14": "గత 14 రోజులు",
+        "by_category": "వర్గం ప్రకారం ఖర్చు", "top_items": "ఎక్కువ ఖర్చైనవి",
+        "patterns": "నమూనాలు", "streak": "వరుస రోజులు", "no_items": "ఈ నెలలో ఇంకా ఏమీ లేదు.",
+        "month_filter": "నెల", "search_item": "పేరు వెతకండి", "all_option": "అన్నీ",
+        "delete_selected": "ఎంచుకున్నవి తొలగించండి", "entries": "ఎంట్రీలు",
+        "no_match": "ఈ ఫిల్టర్లకు ఏమీ దొరకలేదు.", "you_asked": "మీరు అడిగింది",
+        "ask_placeholder": "ఈ నెల ఎంత ఖర్చు అయింది?",
+    },
+    "en-IN": {
+        "settings": "Settings", "export": "Export", "expenses_csv": "Expenses CSV",
+        "backup_json": "Full backup (JSON)", "restore_header": "Restore a backup",
+        "restore_hint": "Pick a JSON backup first, then confirm.",
+        "restore_preview": "This backup holds", "restore_replaces": "Restoring replaces the data already on this device.",
+        "restore_confirm": "Replace my data with this backup", "restore_now": "Restore now",
+        "restore_done": "Backup restored", "danger": "Danger zone",
+        "danger_hint": "Deletes every expense and khata entry on this device.",
+        "danger_confirm": "I understand, clear everything", "cleared": "All data cleared",
+        "manual_header": "Add one entry manually (exact amount, any date)",
+        "what": "What was it?", "amount": "Amount (₹)", "category": "Category",
+        "date": "Date", "add_expense": "Add expense",
+        "need_desc": "Add a description and an amount above zero.",
+        "owe_me": "They owe me", "i_owe": "I owe them", "people_pending": "People pending",
+        "all_entries": "All entries", "add_khata": "Add khata entry", "person": "Person",
+        "type": "Type", "add_entry": "Add entry", "need_khata": "Add a name and an amount.",
+        "paid": "Paid", "remaining": "Remaining", "record_payment": "Record payment",
+        "payment_amount": "Payment (₹)", "need_payment": "Enter a payment amount first.",
+        "pick_one": "Pick a single entry to record a payment against.", "edit_entry": "Edit an entry",
+        "save_edits": "Save edits", "updated": "Edits saved", "delete": "Delete",
+        "deleted": "Deleted", "settled_toast": "Marked as settled", "reopen_toast": "Back to pending",
+        "view_month": "Month", "this_month": "This month", "last_14": "Last 14 days",
+        "by_category": "Spending by category", "top_items": "Top items",
+        "patterns": "Patterns", "streak": "Logging streak", "no_items": "No items yet this month.",
+        "month_filter": "Month", "search_item": "Search item", "all_option": "All",
+        "delete_selected": "Delete selected", "entries": "entries",
+        "no_match": "No entries match these filters.", "you_asked": "You asked",
+        "ask_placeholder": "is mahine kitna kharch hua?",
+    },
+}
+
 QUICK_CHIPS = [
     ("🍵 Chai", 20.0, "Food"),
     ("🛺 Auto", 80.0, "Travel"),
@@ -214,7 +306,7 @@ lang_choice = st.segmented_control(
     label_visibility="collapsed",
 ) or config.DEFAULT_LANGUAGE
 lang_code = config.LANGUAGES.get(lang_choice, "hi-IN")
-T = UI[lang_code]
+T = {**UI[lang_code], **EXTRA.get(lang_code, {})}
 voice_ready = config.api_key_configured()
 
 expenses_df = store.expenses()
@@ -222,7 +314,7 @@ udhar_df = store.udhar()
 
 # ---------------- SIDEBAR: SETTINGS, DATA ----------------
 with st.sidebar:
-    st.markdown("### ⚙️ Settings")
+    st.markdown(f"### ⚙️ {T['settings']}")
     budget_value = store.get_budget()
     new_budget = st.number_input(
         T["budget_target"],
@@ -241,9 +333,9 @@ with st.sidebar:
         st.caption(f"📦 {stats['count']} expenses · 📒 {len(udhar_df)} khata entries")
 
     st.divider()
-    st.markdown("### 📤 Export")
+    st.markdown(f"### 📤 {T['export']}")
     st.download_button(
-        "⬇️ Expenses CSV",
+        f"⬇️ {T['expenses_csv']}",
         data=store.export_csv(),
         file_name=f"awaaz_kharcha_{dt.date.today().isoformat()}.csv",
         mime="text/csv",
@@ -251,7 +343,7 @@ with st.sidebar:
         disabled=expenses_df.empty,
     )
     st.download_button(
-        "⬇️ Full backup (JSON)",
+        f"⬇️ {T['backup_json']}",
         data=store.export_json(),
         file_name=f"awaaz_kharcha_backup_{dt.date.today().isoformat()}.json",
         mime="application/json",
@@ -259,15 +351,39 @@ with st.sidebar:
         disabled=expenses_df.empty and udhar_df.empty,
     )
 
+    with st.expander(f"♻️ {T['restore_header']}"):
+        st.caption(T["restore_hint"])
+        backup_file = st.file_uploader(
+            T["backup_json"], type=["json"], key="restore_file", label_visibility="collapsed"
+        )
+        if backup_file is not None:
+            raw = backup_file.getvalue().decode("utf-8", errors="replace")
+            try:
+                preview = store.backup_preview(raw)
+            except ValueError as exc:
+                st.error(str(exc))
+            else:
+                span = f"{preview['first']} → {preview['last']}" if preview["first"] else "—"
+                st.caption(
+                    f"{T['restore_preview']} {preview['expenses']} {T['entries']} ({span}), "
+                    f"{preview['udhar']} khata · {insights.inr(preview['budget'])}"
+                )
+                st.warning(T["restore_replaces"])
+                if st.checkbox(T["restore_confirm"], key="confirm_restore"):
+                    if st.button(T["restore_now"], type="primary", use_container_width=True):
+                        restored = store.restore_json(raw)
+                        st.toast(f"{T['restore_done']}: {restored[0]} + {restored[1]}", icon="♻️")
+                        st.rerun()
+
     st.divider()
-    with st.expander("🗑️ Danger zone"):
-        st.caption("Deletes every expense and khata entry on this device.")
-        confirm = st.checkbox("I understand, clear everything", key="confirm_clear")
+    with st.expander(f"🗑️ {T['danger']}"):
+        st.caption(T["danger_hint"])
+        confirm = st.checkbox(T["danger_confirm"], key="confirm_clear")
         if st.button(T["clear_all"], disabled=not confirm, use_container_width=True):
             store.clear_all()
             st.session_state.pop("last_saved_ids", None)
             st.session_state.pop("last_saved_udhar_ids", None)
-            st.toast("All data cleared", icon="🗑️")
+            st.toast(T["cleared"], icon="🗑️")
             st.rerun()
 
     st.caption(f"DB: {DATA_FILE}")
@@ -457,15 +573,19 @@ with tabs[1]:
             st.rerun()
 
     st.divider()
-    with st.expander("➕ Add one entry manually (exact amount, any date)"):
+    with st.expander(f"➕ {T['manual_header']}"):
         with st.form("manual_entry", clear_on_submit=True):
             c1, c2 = st.columns([2, 1])
-            item = c1.text_input("What was it?", placeholder="Chai, auto, medicine...")
-            amount = c2.number_input("Amount (₹)", min_value=0.0, step=10.0, format="%.0f")
+            item = c1.text_input(T["what"], placeholder="Chai, auto, medicine...")
+            amount = c2.number_input(T["amount"], min_value=0.0, step=10.0, format="%.2f")
             c3, c4 = st.columns([1, 1])
-            category = c3.selectbox("Category", CATEGORY_CHOICES, index=CATEGORY_CHOICES.index("Other"))
-            entry_date = c4.date_input("Date", value=today)
-            submitted = st.form_submit_button("Add expense", type="primary", use_container_width=True)
+            category = c3.selectbox(
+                T["category"], CATEGORY_CHOICES, index=CATEGORY_CHOICES.index("Other")
+            )
+            entry_date = c4.date_input(T["date"], value=today)
+            submitted = st.form_submit_button(
+                T["add_expense"], type="primary", use_container_width=True
+            )
             if submitted:
                 if item.strip() and amount > 0:
                     ids = store.add_expenses(
@@ -480,10 +600,10 @@ with tabs[1]:
                         source="manual",
                     )
                     st.session_state["last_saved_ids"] = ids
-                    st.toast("Expense added", icon="✅")
+                    st.toast(T["add_expense"], icon="✅")
                     st.rerun()
                 else:
-                    st.warning("Add a description and an amount above zero.")
+                    st.warning(T["need_desc"])
 
 # ---------------- TAB 3: KHATA ----------------
 with tabs[2]:

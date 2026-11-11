@@ -24,8 +24,12 @@ PREV_WORDS = ("pichle hafte", "last week", "previous week")
 
 
 def inr(amount: float) -> str:
-    """Format a rupee amount the way the UI shows it."""
-    return f"₹{float(amount or 0):,.0f}"
+    """Format a rupee amount, keeping paise only when they are actually there."""
+    value = abs(float(amount or 0))
+    sign = "-" if float(amount or 0) < 0 else ""
+    if abs(value - round(value)) < 0.005:
+        return f"{sign}₹{value:,.0f}"
+    return f"{sign}₹{value:,.2f}"
 
 
 def _prep(frame: pd.DataFrame | None) -> pd.DataFrame:
@@ -340,6 +344,8 @@ def answer_query(
     # 2. Udhar / khata question
     if _has(q, UDHAR_WORDS) and khata is not None and len(khata) > 0:
         pending = khata[khata["status"] == "Pending"] if "status" in khata else khata
+        # Partial payments mean the amount owed is the unpaid remainder.
+        money = "remaining" if "remaining" in pending.columns else "amount"
         person = _person_from_query(q, khata)
         if person:
             person_rows = pending[pending["person"] == person]
@@ -347,8 +353,8 @@ def answer_query(
                 settled = khata[(khata["person"] == person) & (khata["status"] == "Settled")]
                 amount = float(settled["amount"].sum()) if not settled.empty else 0.0
                 return f"Nothing pending with {person}. {inr(amount)} is already settled."
-            owed = float(person_rows.loc[person_rows["type"].str.contains("Lent", na=False), "amount"].sum())
-            taken = float(person_rows["amount"].sum()) - owed
+            owed = float(person_rows.loc[person_rows["type"].str.contains("Lent", na=False), money].sum())
+            taken = float(person_rows[money].sum()) - owed
             parts = []
             if owed:
                 parts.append(f"owes you {inr(owed)}")
@@ -358,9 +364,9 @@ def answer_query(
         if pending.empty:
             return "Every khata entry is settled. Nothing pending."
         owed_total = float(
-            pending.loc[pending["type"].astype(str).str.contains("Lent", na=False), "amount"].sum()
+            pending.loc[pending["type"].astype(str).str.contains("Lent", na=False), money].sum()
         )
-        taken_total = float(pending["amount"].sum()) - owed_total
+        taken_total = float(pending[money].sum()) - owed_total
         return (
             f"{inr(owed_total)} is pending to come back to you from "
             f"{pending['person'].nunique()} people, and you owe {inr(taken_total)}."

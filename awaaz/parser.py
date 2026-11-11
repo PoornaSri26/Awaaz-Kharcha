@@ -195,6 +195,14 @@ def normalize_hinglish_numbers(text: str) -> str:
     cleaned = text or ""
     # Gnani writes "₹20" as one token; split the symbol off so amounts stay numbers.
     cleaned = cleaned.replace("₹", " ")
+    # "1,500" and "1,00,000" are single amounts, not two comma-separated items.
+    for _ in range(3):
+        before = cleaned
+        # Lakh grouping (1,00,000) first, then the familiar 3-digit form (1,500).
+        cleaned = re.sub(r"(?<=\d),(?=\d{2}(?!\d))", "", cleaned)
+        cleaned = re.sub(r"(?<=\d),(?=\d{3}(?!\d))", "", cleaned)
+        if cleaned == before:
+            break
     for pattern, value in _NUMBER_PATTERNS:
         cleaned = pattern.sub(value, cleaned)
     # "1k" / "2.5k" style shortcuts

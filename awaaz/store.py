@@ -19,7 +19,7 @@ from . import config
 from .parser import normalize_category
 
 EXPENSE_COLUMNS = ["id", "date", "item", "amount", "category", "source", "created_at"]
-UDHAR_COLUMNS = ["id", "date", "person", "amount", "type", "status", "created_at"]
+UDHAR_COLUMNS = ["id", "date", "person", "amount", "paid", "remaining", "type", "status", "created_at"]
 
 
 class Store:
@@ -58,6 +58,7 @@ class Store:
                     date TEXT NOT NULL,
                     person TEXT NOT NULL,
                     amount REAL NOT NULL,
+                    paid REAL NOT NULL DEFAULT 0,
                     type TEXT NOT NULL,
                     status TEXT NOT NULL DEFAULT 'Pending',
                     created_at TEXT NOT NULL
@@ -69,6 +70,14 @@ class Store:
                 CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
                 CREATE INDEX IF NOT EXISTS idx_udhar_status ON udhar(status);
                 """
+            )
+            columns = {row["name"] for row in conn.execute("PRAGMA table_info(udhar)")}
+            if "paid" not in columns:  # databases created before partial payments
+                conn.execute("ALTER TABLE udhar ADD COLUMN paid REAL NOT NULL DEFAULT 0")
+            # A settled entry is, by definition, fully paid — including rows that
+            # existed before the paid column did.
+            conn.execute(
+                "UPDATE udhar SET paid = amount WHERE status = 'Settled' AND paid < amount"
             )
 
     # ---------------- expenses ----------------
@@ -177,15 +186,21 @@ class Store:
                 amount = float(row.get("amount") or 0)
                 if amount <= 0:
                     continue
+                money = round(amount, 2)
+                paid = min(max(float(row.get("paid") or 0), 0.0), money)
+                if str(row.get("status") or "") == "Settled" and paid == 0:
+                    paid = money  # backups written before partial payments existed
+                status = "Settled" if paid >= money else str(row.get("status") or "Pending")
                 cursor = conn.execute(
-                    "INSERT INTO udhar (date, person, amount, type, status, created_at)"
-                    " VALUES (?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO udhar (date, person, amount, paid, type, status, created_at)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?)",
                     (
                         str(row.get("date") or dt.date.today().isoformat()),
                         (str(row.get("person") or "Someone")).strip() or "Someone",
-                        round(amount, 2),
+                        money,
+                        round(paid, 2),
                         str(row.get("type") or "Lent (Diya)"),
-                        str(row.get("status") or "Pending"),
+                        status,
                         now,
                     ),
                 )
@@ -195,26 +210,97 @@ class Store:
     def udhar(self) -> pd.DataFrame:
         with self._connect() as conn:
             frame = pd.read_sql_query(
-                "SELECT id, date, person, amount, type, status, created_at"
+                "SELECT id, date, person, amount, paid, type, status, created_at"
                 " FROM udhar ORDER BY date DESC, id DESC",
                 conn,
             )
         if frame.empty:
             return pd.DataFrame(columns=UDHAR_COLUMNS)
-        frame["amount"] = pd.to_numeric(frame["amount"], errors="coerce").fillna(0.0)
+        for column in ("amount", "paid"):
+            frame[column] = pd.to_numeric(frame[column], errors="coerce").fillna(0.0)
+        frame["remaining"] = (frame["amount"] - frame["paid"]).clip(lower=0).round(2)
         return frame
 
     def set_udhar_status(self, ids: list[int], status: str) -> int:
+        """Mark entries settled (fully paid) or reopen them (nothing paid)."""
         ids = [int(i) for i in ids]
         if not ids:
             return 0
         placeholders = ",".join("?" * len(ids))
         with self._connect() as conn:
-            cursor = conn.execute(
-                f"UPDATE udhar SET status = ? WHERE id IN ({placeholders})",
-                [status, *ids],
-            )
+            if status == "Settled":
+                cursor = conn.execute(
+                    f"UPDATE udhar SET status = 'Settled', paid = amount"
+                    f" WHERE id IN ({placeholders})",
+                    ids,
+                )
+            else:
+                cursor = conn.execute(
+                    f"UPDATE udhar SET status = 'Pending', paid = 0"
+                    f" WHERE id IN ({placeholders})",
+                    ids,
+                )
         return cursor.rowcount
+
+    def record_payment(self, udhar_id: int, payment: float | None = None) -> dict:
+        """Add a full or partial repayment and return the entry's new balance."""
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT amount, paid FROM udhar WHERE id = ?", (int(udhar_id),)
+            ).fetchone()
+            if row is None:
+                raise ValueError(f"No khata entry with id {udhar_id}.")
+            amount = float(row["amount"])
+            paid = float(row["paid"])
+            delta = amount - paid if payment is None else float(payment)
+            paid = round(min(max(paid + max(delta, 0.0), 0.0), amount), 2)
+            status = "Settled" if paid >= amount else "Pending"
+            conn.execute(
+                "UPDATE udhar SET paid = ?, status = ? WHERE id = ?",
+                (paid, status, int(udhar_id)),
+            )
+        return {"paid": paid, "remaining": round(amount - paid, 2), "status": status}
+
+    def update_udhar(
+        self,
+        udhar_id: int,
+        *,
+        date: str | None = None,
+        person: str | None = None,
+        amount: float | None = None,
+        type: str | None = None,
+    ) -> None:
+        """Fix a typo or a wrong amount without deleting and re-adding the row."""
+        fields, values = [], []
+        if date is not None:
+            fields.append("date = ?")
+            values.append(date)
+        if person is not None and person.strip():
+            fields.append("person = ?")
+            values.append(person.strip())
+        if amount is not None:
+            fields.append("amount = ?")
+            values.append(round(float(amount), 2))
+        if type is not None:
+            fields.append("type = ?")
+            values.append(type)
+        if not fields:
+            return
+        values.append(int(udhar_id))
+        with self._connect() as conn:
+            conn.execute(f"UPDATE udhar SET {', '.join(fields)} WHERE id = ?", values)
+            row = conn.execute(
+                "SELECT amount, paid FROM udhar WHERE id = ?", (int(udhar_id),)
+            ).fetchone()
+            if row is not None:
+                # A reduced amount must never leave more paid than was ever owed.
+                amount_now = float(row["amount"])
+                paid_now = min(float(row["paid"]), amount_now)
+                status = "Settled" if paid_now >= amount_now else "Pending"
+                conn.execute(
+                    "UPDATE udhar SET paid = ?, status = ? WHERE id = ?",
+                    (round(paid_now, 2), status, int(udhar_id)),
+                )
 
     def delete_udhar(self, ids: list[int]) -> int:
         ids = [int(i) for i in ids]
@@ -262,10 +348,75 @@ class Store:
         payload = {
             "exported_at": dt.datetime.now().isoformat(timespec="seconds"),
             "expenses": self.expenses().drop(columns=["created_at"], errors="ignore").to_dict("records"),
-            "udhar": self.udhar().drop(columns=["created_at"], errors="ignore").to_dict("records"),
+            "udhar": self.udhar()
+            .drop(columns=["created_at", "remaining"], errors="ignore")
+            .to_dict("records"),
             "budget": self.get_budget(),
         }
         return json.dumps(payload, indent=2, ensure_ascii=False)
+
+    @staticmethod
+    def _parse_backup(payload: str) -> dict:
+        """Validate a backup file before anything is written."""
+        try:
+            data = json.loads(payload)
+        except ValueError as exc:
+            raise ValueError("That file is not valid JSON.") from exc
+        if not isinstance(data, dict):
+            raise ValueError("That backup is not in the Awaaz Kharcha format.")
+        expenses = data.get("expenses") or []
+        udhar = data.get("udhar") or []
+        if not isinstance(expenses, list) or not isinstance(udhar, list):
+            raise ValueError("That backup is not in the Awaaz Kharcha format.")
+        if not expenses and not udhar:
+            raise ValueError("That backup has no expenses or khata entries.")
+        return {"expenses": expenses, "udhar": udhar, "budget": data.get("budget")}
+
+    def backup_preview(self, payload: str) -> dict:
+        """Describe a backup file without touching the current data."""
+        data = self._parse_backup(payload)
+        dates = sorted(str(row.get("date")) for row in data["expenses"] if row.get("date"))
+        return {
+            "expenses": len(data["expenses"]),
+            "udhar": len(data["udhar"]),
+            "first": dates[0] if dates else None,
+            "last": dates[-1] if dates else None,
+            "budget": float(data.get("budget") or 0),
+        }
+
+    def restore_json(self, payload: str) -> tuple[int, int]:
+        """Replace all local data with a backup and report what was restored."""
+        data = self._parse_backup(payload)
+        self.clear_all()
+        expense_ids = self.add_expenses(
+            [
+                {
+                    "date": row.get("date"),
+                    "item": row.get("item"),
+                    "amount": row.get("amount"),
+                    "category": row.get("category"),
+                }
+                for row in data["expenses"]
+            ],
+            source="restored",
+        )
+        udhar_ids = self.add_udhar(
+            [
+                {
+                    "date": row.get("date"),
+                    "person": row.get("person"),
+                    "amount": row.get("amount"),
+                    "paid": row.get("paid") or 0,
+                    "type": row.get("type"),
+                    "status": row.get("status"),
+                }
+                for row in data["udhar"]
+            ]
+        )
+        budget = data.get("budget")
+        if budget:
+            self.set_budget(float(budget))
+        return len(expense_ids), len(udhar_ids)
 
     def clear_all(self) -> None:
         with self._connect() as conn:
