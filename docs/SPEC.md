@@ -290,3 +290,96 @@ application, so a few spec items need a different client.
 | Wake phrase, home-screen widget, lock-screen shortcut, offline queue | Not possible in a browser-hosted Streamlit page; needs a mobile client |
 | Biometric app lock, encrypted cloud sync | Not possible locally; needs a backend and native APIs |
 | Text-to-speech confirmation | Not yet; would need a browser speech component |
+
+---
+
+## 13. Innovative Features
+
+### 13.1 Capture Innovations
+
+| Feature | What it does |
+|---------|--------------|
+| Ambient Mode | Say "Trip mode on" and narrate through the day; one review screen at night. |
+| Voice + Camera Combo | Point the camera at a bill and say "split this with the team". |
+| Whisper Logging | Low-volume speech support for public places. |
+| Wearable and Car Mode | Log from a watch, earbuds long-press, or Android Auto/CarPlay. |
+| Smart Notification Prompt | A bank/UPI SMS becomes "Swiggy, Rs 450. Food?" and is confirmed in one tap. |
+| Location-Aware Suggestions | Near a known merchant, pre-fill category and merchant. |
+| Habit Shortcuts | Personal phrases: "usual chai" = Rs 20 Food Cash. |
+
+### 13.2 AI-Powered Intelligence
+
+- Conversational advisor: "Why was this month so expensive?"
+- Anomaly detection: "This Rs 3,200 dining expense is 4x your usual."
+- Spending forecast: predicted month-end total and the date a budget is crossed.
+- Subscription hunter: detect repeating small charges.
+- What-if simulator: "What if I cut eating out by 30%?"
+- Mood and context tags (off by default, local only).
+- Auto-learning vocabulary: slang, nicknames, regional phrases.
+
+### 13.3 Social and Shared Money
+
+Voice split and settle, family pool, trip ledger with multi-currency, group challenge.
+
+### 13.4 Motivation and Behavior Change
+
+Spending coach personality, savings goals by voice, round-up savings, streaks and
+badges, pause before you buy, weekly voice recap.
+
+### 13.5 Trust, Privacy and Accessibility
+
+On-device AI mode, voiceprint lock, privacy redaction, mid-sentence multilingual
+switching, elder and low-literacy mode.
+
+### 13.6 Signature Feature Ideas
+
+Day replay, money memory, voice budget negotiation, receipt-to-voice cross-check,
+financial health score.
+
+### 13.7 Innovation Workflow (Ambient + Smart Prompt)
+
+```mermaid
+flowchart TD
+    A[Bank SMS or notification detected] --> B[Parse amount and merchant]
+    B --> C{Known merchant?}
+    C -->|Yes| D[Auto-suggest category]
+    C -->|No| E[Ask user by voice or tap]
+    D --> F[One-tap or voice confirm]
+    E --> F
+    F --> G[Save entry]
+    G --> H[Update budget, forecast and streak]
+    H --> I[Anomaly and subscription checks]
+    I --> J[Evening Day Replay and review]
+```
+
+### 13.8 Recommended Innovation Priority
+
+| Priority | Feature | Why |
+|----------|---------|-----|
+| High | Ambient Mode, SMS-to-voice prompt, Habit Shortcuts | Biggest reduction in effort per entry |
+| High | Conversational Advisor, Anomaly Detection | Turns logging into real insight |
+| Medium | Voice Split and Settle, Savings Goals | Strong daily-use hooks |
+| Medium | Weekly Voice Recap, Day Replay | Emotional engagement and retention |
+| Later | Voiceprint Lock, Mood Tags, Wearables | Polish and differentiation |
+
+---
+
+## 14. Innovation Feasibility in This Build
+
+| Innovation | Verdict | Notes |
+|------------|---------|-------|
+| Spending forecast | Implemented | Pace-based month-end projection and the day the budget is crossed |
+| Anomaly detection | Implemented | Flags an expense at 3x the category median, once a category has 3+ entries |
+| Smart notification prompt | Partly implemented | Paste a bank/UPI SMS and it becomes a confirmable entry; reading notifications needs a native app |
+| Habit Shortcuts | Not yet | Needs a user-editable phrase table; the one-tap chips are the current stand-in |
+| Ambient Mode | Not yet | Needs a session mode that saves without confirmation, plus a nightly review screen |
+| Conversational advisor | Partly | Rule-based Q&A answers period, category, budget and forecast questions; open-ended reasoning needs an LLM |
+| Voice split and settle | Not yet | Khata covers two-party lending, not multi-person splits |
+| Subscription hunter | Not yet | Needs 3+ months of history to be reliable |
+| What-if simulator | Not yet | Straightforward once a scenario form exists |
+| Bank SMS/notification reading | Not possible here | Requires Android SMS permission or notification access |
+| Location-aware suggestions | Not possible here | Requires device location and a merchant map |
+| Wearable, car, widget, wake phrase | Not possible here | Requires a mobile client; a browser tab cannot listen in the background |
+| Voiceprint lock, biometric lock | Not possible here | Requires native biometrics and a voiceprint model |
+| Encrypted cloud sync, family pool | Not yet | Needs a backend, accounts and key management |
+| Day replay, weekly voice recap | Not yet | Needs TTS; the text digests already exist |

@@ -21,6 +21,10 @@ AVERAGE_WORDS = ("average", "per day", "roz", "daily", "औसत", "సగట�
 BIGGEST_WORDS = ("biggest", "largest", "sabse bada", "sabse mehnga", "highest single")
 COUNT_WORDS = ("how many", "kitni", "kitne", "count", "number of")
 PREV_WORDS = ("pichle hafte", "last week", "previous week")
+FORECAST_WORDS = (
+    "forecast", "projection", "projected", "end of month", "month end", "kitna hoga",
+    "mahine ke end", "महीने के अंत", "నెల చివర",
+)
 
 
 def inr(amount: float) -> str:
@@ -141,6 +145,68 @@ def budget_status(month_total: float, budget: float, today: dt.date | None = Non
         "per_day": max(remaining, 0.0) / days_left,
         "level": level,
     }
+
+
+def forecast(
+    expenses: pd.DataFrame, budget: float = 0.0, today: dt.date | None = None
+) -> dict:
+    """Where this month lands if the current pace continues."""
+    today = today or dt.date.today()
+    frame = _prep(expenses)
+    month = month_frame(frame, today)
+    spent = float(month["amount"].sum())
+    days_in_month = calendar.monthrange(today.year, today.month)[1]
+    pace = spent / max(today.day, 1)
+    projected = pace * days_in_month
+    result = {
+        "spent": spent,
+        "pace": pace,
+        "projected": projected,
+        "days_in_month": days_in_month,
+        "cross_on": None,
+        "over_by": max(projected - budget, 0.0) if budget > 0 else 0.0,
+    }
+    if budget > 0 and pace > 0 and projected > budget:
+        cross_day = int(budget // pace)
+        if cross_day < days_in_month:
+            cross_day = max(cross_day, today.day)
+            result["cross_on"] = dt.date(today.year, today.month, cross_day)
+    return result
+
+
+def anomalies(
+    expenses: pd.DataFrame,
+    today: dt.date | None = None,
+    factor: float = 3.0,
+    minimum: int = 3,
+) -> pd.DataFrame:
+    """Expenses far above the usual size for their category this month."""
+    today = today or dt.date.today()
+    columns = ["date", "item", "amount", "category", "usual", "times"]
+    month = month_frame(_prep(expenses), today)
+    if month.empty:
+        return pd.DataFrame(columns=columns)
+
+    medians = month.groupby("category")["amount"].median()
+    counts = month.groupby("category")["amount"].size()
+    flagged = []
+    for _, row in month.iterrows():
+        category = row["category"]
+        usual = float(medians.get(category, 0.0))
+        if counts.get(category, 0) < minimum or usual <= 0:
+            continue
+        if row["amount"] >= usual * factor and row["amount"] > usual:
+            flagged.append(
+                {
+                    "date": row["date"].date().isoformat(),
+                    "item": row["item"],
+                    "amount": float(row["amount"]),
+                    "category": category,
+                    "usual": round(usual, 2),
+                    "times": round(float(row["amount"]) / usual, 1),
+                }
+            )
+    return pd.DataFrame(flagged, columns=columns).sort_values("amount", ascending=False)
 
 
 def category_totals(expenses: pd.DataFrame, today: dt.date | None = None) -> pd.Series:
@@ -344,7 +410,27 @@ def answer_query(
             f"about {inr(status['per_day'])} a day for the remaining {status['days_left']} days."
         )
 
-    # 2. Udhar / khata question
+    # 2. Forecast question
+    if _has(q, FORECAST_WORDS):
+        pace = forecast(frame, budget, today)
+        if pace["spent"] <= 0:
+            return "Nothing is logged this month yet, so there is no pace to project."
+        answer = (
+            f"At {inr(pace['pace'])} a day you are heading for "
+            f"{inr(pace['projected'])} this month"
+        )
+        if pace["cross_on"] is not None:
+            answer += (
+                f", crossing your {inr(budget)} budget around "
+                f"{pace['cross_on'].strftime('%d %b')}."
+            )
+        elif budget > 0:
+            answer += f", which stays inside your {inr(budget)} budget."
+        else:
+            answer += "."
+        return answer
+
+    # 3. Udhar / khata question
     if _has(q, UDHAR_WORDS) and khata is not None and len(khata) > 0:
         pending = khata[khata["status"] == "Pending"] if "status" in khata else khata
         # Partial payments mean the amount owed is the unpaid remainder.

@@ -13,7 +13,7 @@ import pandas as pd
 import streamlit as st
 
 from awaaz import config, insights
-from awaaz.parser import CAT_EMOJI, EXPENSE_CATEGORIES, parse_expenses
+from awaaz.parser import CAT_EMOJI, EXPENSE_CATEGORIES, parse_bank_sms, parse_expenses
 from awaaz.store import Store
 from awaaz.stt import SttError, transcribe
 
@@ -160,6 +160,13 @@ EXTRA = {
         "dup_warn": "यह एंट्री अभी-अभी सेव हुई लगती है", "dup_confirm": "फिर भी सेव करें",
         "kind_label": "किस्म", "merchant_label": "दुकान/जगह", "mode_label": "भुगतान",
         "income_label": "आमदनी", "paid_by": "तरीका",
+        "pace_note": "🔮 इस रफ़्तार से इस महीने {amount} तक पहुँच सकते हैं।",
+        "cross_note": " बजट {date} के आसपास पार हो जाएगा।",
+        "anomaly_header": "असामान्य खर्च",
+        "anomaly_hint": "हर एंट्री अपनी श्रेणी के सामान्य खर्च से कम से कम 3 गुना है।",
+        "sms_header": "बैंक SMS पेस्ट करें",
+        "sms_hint": "जैसे: \"Rs 450 debited at Swiggy\" — यह एंट्री बन जाएगी।",
+        "no_amount": "रकम नहीं मिली। 'chai 20' या 'dedh sau (150)' आज़माइए।",
     },
     "te-IN": {
         "settings": "సెట్టింగ్‌లు", "export": "ఎక్స్‌పోర్ట్", "expenses_csv": "ఖర్చుల CSV",
@@ -192,6 +199,13 @@ EXTRA = {
         "dup_warn": "ఈ ఎంట్రీ ఇప్పుడే సేవ్ అయినట్టుంది", "dup_confirm": "అయినా సేవ్ చేయండి",
         "kind_label": "రకం", "merchant_label": "దుకాణం", "mode_label": "చెల్లింపు",
         "income_label": "ఆదాయం", "paid_by": "విధానం",
+        "pace_note": "🔮 ఈ వేగంతో ఈ నెల {amount} వరకు చేరవచ్చు.",
+        "cross_note": " బడ్జెట్ {date} సుమారుగా దాటిపోతుంది.",
+        "anomaly_header": "అసాధారణ ఖర్చులు",
+        "anomaly_hint": "ప్రతిదీ దాని వర్గంలో సాధారణ ఖర్చు కంటే కనీసం 3 రెట్లు ఉంది.",
+        "sms_header": "బ్యాంక్ SMS పేస్ట్ చేయండి",
+        "sms_hint": "ఉదా: \"Rs 450 debited at Swiggy\" — ఇది ఎంట్రీగా మారుతుంది.",
+        "no_amount": "మొత్తం దొరకలేదు. 'chai 20' లేదా 'dedh sau (150)' ప్రయత్నించండి.",
     },
     "en-IN": {
         "settings": "Settings", "export": "Export", "expenses_csv": "Expenses CSV",
@@ -224,6 +238,13 @@ EXTRA = {
         "dup_warn": "This looks like a duplicate of an entry saved minutes ago",
         "dup_confirm": "Save anyway", "kind_label": "Kind", "merchant_label": "Merchant",
         "mode_label": "Payment", "income_label": "Income", "paid_by": "Via",
+        "pace_note": "🔮 At this pace you will spend {amount} this month.",
+        "cross_note": " That crosses your budget around {date}.",
+        "anomaly_header": "Unusual expenses",
+        "anomaly_hint": "Each of these is at least 3x your usual spend in its category.",
+        "sms_header": "Paste a bank SMS",
+        "sms_hint": "e.g. \"Rs 450 debited at Swiggy\" — it becomes an entry you can save.",
+        "no_amount": "I could not catch an amount. Try 'chai 20' or 'dedh sau (150)'.",
     },
 }
 
@@ -635,6 +656,25 @@ with tabs[1]:
                 else:
                     st.warning(T["need_desc"])
 
+    with st.expander(f"📩 {T['sms_header']}"):
+        st.caption(T["sms_hint"])
+        sms_text = st.text_area(
+            "SMS", key="sms_text", height=90, label_visibility="collapsed"
+        )
+        if sms_text.strip():
+            sms_row = parse_bank_sms(sms_text, today)
+            if sms_row is None:
+                st.warning(T["no_amount"])
+            else:
+                render_parsed([sms_row], [])
+                if st.button(
+                    f"✅ {T['save']}",
+                    key="sms_save",
+                    type="primary",
+                    use_container_width=True,
+                ):
+                    save_rows([sms_row], [], "sms")
+
 # ---------------- TAB 3: KHATA ----------------
 with tabs[2]:
     st.markdown(f"#### 📒 {T['udhar_header']}")
@@ -752,6 +792,26 @@ with tabs[3]:
                 )
             else:
                 st.caption(f"💚 You are on track — {insights.inr(budget_info['remaining'])} spare this month.")
+
+        pace = insights.forecast(expenses_df, budget, today)
+        if pace["spent"] > 0:
+            note = T["pace_note"].format(amount=insights.inr(pace["projected"]))
+            if pace["cross_on"] is not None:
+                note += T["cross_note"].format(date=pace["cross_on"].strftime("%d %b"))
+            st.caption(note)
+
+        flagged = insights.anomalies(expenses_df, today)
+        if not flagged.empty:
+            with st.expander(f"⚠️ {T['anomaly_header']} ({len(flagged)})"):
+                st.caption(T["anomaly_hint"])
+                st.dataframe(
+                    flagged.assign(
+                        amount=flagged["amount"].map(insights.inr),
+                        usual=flagged["usual"].map(insights.inr),
+                    ),
+                    hide_index=True,
+                    use_container_width=True,
+                )
 
         delta = stats["delta_pct"]
         if stats["prev_month"] > 0:

@@ -35,6 +35,7 @@ CATEGORIES = {
         "chai", "tea", "coffee", "lunch", "dinner", "breakfast", "tiffin", "biryani",
         "samosa", "snack", "snacks", "khana", "canteen", "juice", "pani", "water",
         "food", "dosa", "idli", "vada", "poha", "maggi", "roti", "thali", "ice cream",
+        "swiggy", "zomato", "dominos", "domino's", "kfc", "starbucks",
         "టీ", "భోజనం", "టిఫిన్", "చాయ్", "అన్నం", "బిర్యానీ", "కాఫీ", "డోసా",
         "चाय", "खाना", "नाश्ता", "कॉफी", "भोजन", "लंच", "डिनर", "स्नैक", "स्नैक्स",
     ],
@@ -47,6 +48,7 @@ CATEGORIES = {
     "Groceries": [
         "sabzi", "sabji", "vegetables", "milk", "doodh", "rice", "atta", "dal", "oil",
         "grocery", "groceries", "kirana", "fruits", "eggs", "bread", "sugar",
+        "dmart", "bigbasket", "blinkit", "zepto", "instamart",
         "పాలు", "కూరగాయలు", "సరుకులు", "బియ్యం", "నూనె", "గుడ్లు",
         "सब्ज़ी", "दूध", "राशन", "आटा", "दाल", "तेल", "अंडे",
     ],
@@ -307,6 +309,44 @@ def detect_merchant(text: str) -> str | None:
     if not words or words[0].isdigit():
         return None
     return _title(" ".join(words[:3]))
+
+
+_SMS_AMOUNT_RE = re.compile(
+    r"(?:rs\.?|inr|₹)\s*([\d,]+(?:\.\d+)?)", re.IGNORECASE
+)
+
+
+def parse_bank_sms(text: str, today: dt.date | None = None) -> dict | None:
+    """Turn a bank/UPI SMS into one expense row, or None if it has no amount.
+
+    "Rs 450 debited at Swiggy" -> 450, Swiggy, Food, Expense. A credit becomes
+    income so it never inflates the spending totals.
+    """
+    today = today or dt.date.today()
+    cleaned = (text or "").strip()
+    match = _SMS_AMOUNT_RE.search(cleaned)
+    if not match:
+        return None
+    try:
+        amount = float(match.group(1).replace(",", ""))
+    except ValueError:
+        return None
+    if amount <= 0:
+        return None
+
+    lowered = cleaned.lower()
+    merchant = detect_merchant(cleaned)
+    kind = "Income" if any(_word_in(lowered, w) for w in INCOME_WORDS) else "Expense"
+    item = merchant or ("Bank credit" if kind == "Income" else "Bank payment")
+    return {
+        "date": detect_date(cleaned, today).isoformat(),
+        "item": item,
+        "amount": round(amount, 2),
+        "category": categorize(merchant or cleaned),
+        "merchant": merchant,
+        "payment_mode": detect_payment_mode(cleaned) or ("Netbanking" if kind == "Income" else None),
+        "kind": kind,
+    }
 
 
 def _date_offset(text: str) -> int | None:
