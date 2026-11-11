@@ -36,7 +36,7 @@ CATEGORIES = {
         "samosa", "snack", "snacks", "khana", "canteen", "juice", "pani", "water",
         "food", "dosa", "idli", "vada", "poha", "maggi", "roti", "thali", "ice cream",
         "టీ", "భోజనం", "టిఫిన్", "చాయ్", "అన్నం", "బిర్యానీ", "కాఫీ", "డోసా",
-        "चाय", "खाना", "नाश्ता", "कॉफी", "भोजन",
+        "चाय", "खाना", "नाश्ता", "कॉफी", "भोजन", "लंच", "डिनर", "स्नैक", "स्नैक्स",
     ],
     "Travel": [
         "auto", "bus", "metro", "cab", "ola", "uber", "petrol", "diesel", "fuel",
@@ -193,6 +193,8 @@ _NUMBER_PATTERNS = [
 def normalize_hinglish_numbers(text: str) -> str:
     """Replace Indian number words with digits, e.g. "dedh sau" -> "150"."""
     cleaned = text or ""
+    # Gnani writes "₹20" as one token; split the symbol off so amounts stay numbers.
+    cleaned = cleaned.replace("₹", " ")
     for pattern, value in _NUMBER_PATTERNS:
         cleaned = pattern.sub(value, cleaned)
     # "1k" / "2.5k" style shortcuts
@@ -282,6 +284,44 @@ def is_udhar_chunk(chunk: str) -> bool:
     return any(_word_in(lowered, w) for w in UDHAR_WORDS)
 
 
+def _item_segments(chunk: str) -> list[str]:
+    """Split a comma-less breath into one segment per money amount.
+
+    Gnani Prisma returns "चाय ₹20 ऑटो ₹80 लंच ₹150" with no separators, so every
+    amount anchors its own item. A small number directly before an amount
+    ("2 chai 20") is a quantity, not a separate expense.
+    """
+    tokens = chunk.split()
+    anchors: list[list[int]] = []
+    for index, token in enumerate(tokens):
+        if not _NUM_RE.fullmatch(token):
+            continue
+        if anchors and anchors[-1][-1] == index - 1:
+            anchors[-1].append(index)  # "1 500" / "1,500" is a single amount
+            continue
+        later_money = any(
+            _NUM_RE.fullmatch(rest) and float(rest) >= 10 for rest in tokens[index + 1 :]
+        )
+        if float(token) < 10 and later_money:
+            continue  # quantity like the "2" in "2 chai 20"
+        anchors.append([index])
+
+    if not anchors:
+        return [chunk]
+
+    segments: list[str] = []
+    start = 0
+    for position, group in enumerate(anchors):
+        words = tokens[start : group[0]] + [tokens[i] for i in group]
+        if position + 1 == len(anchors):
+            words += tokens[group[-1] + 1 :]  # trailing context belongs to the last item
+        segment = " ".join(words).strip()
+        if segment:
+            segments.append(segment)
+        start = group[-1] + 1
+    return segments
+
+
 def parse_expenses(
     text: str, today: dt.date | None = None
 ) -> tuple[list[dict], list[dict]]:
@@ -300,40 +340,38 @@ def parse_expenses(
     base_date = detect_date(normalized, today)
 
     for chunk in re.split(SPLITTERS, normalized, flags=re.IGNORECASE):
-        chunk = chunk.strip()
-        if not chunk:
-            continue
-        amount = _pick_amount(chunk)
-        if amount is None:
-            continue
-        # A date word in the chunk wins; otherwise inherit the sentence date.
-        offset = _date_offset(chunk)
-        row_date = today + dt.timedelta(days=offset) if offset is not None else base_date
+        for part in _item_segments(chunk.strip()):
+            amount = _pick_amount(part)
+            if amount is None:
+                continue
+            # A date word in the segment wins; otherwise inherit the sentence date.
+            offset = _date_offset(part)
+            row_date = today + dt.timedelta(days=offset) if offset is not None else base_date
 
-        if is_udhar_chunk(chunk):
-            person = _clean_item(chunk, extra_filler=UDHAR_WORDS)
-            person = _title(person) or "Someone"
-            action = "Lent (Diya)" if any(
-                _word_in(chunk.lower(), w) for w in LENT_HINTS
-            ) else "Borrowed (Liya)"
-            udhar.append(
-                {
-                    "date": row_date.isoformat(),
-                    "person": person,
-                    "amount": round(amount, 2),
-                    "type": action,
-                    "status": "Pending",
-                }
-            )
-        else:
-            item = _title(_clean_item(chunk)) or "General"
-            expenses.append(
-                {
-                    "date": row_date.isoformat(),
-                    "item": item,
-                    "amount": round(amount, 2),
-                    "category": categorize(chunk),
-                }
-            )
+            if is_udhar_chunk(part):
+                person = _title(_clean_item(part, extra_filler=UDHAR_WORDS)) or "Someone"
+                action = (
+                    "Lent (Diya)"
+                    if any(_word_in(part.lower(), w) for w in LENT_HINTS)
+                    else "Borrowed (Liya)"
+                )
+                udhar.append(
+                    {
+                        "date": row_date.isoformat(),
+                        "person": person,
+                        "amount": round(amount, 2),
+                        "type": action,
+                        "status": "Pending",
+                    }
+                )
+            else:
+                expenses.append(
+                    {
+                        "date": row_date.isoformat(),
+                        "item": _title(_clean_item(part)) or "General",
+                        "amount": round(amount, 2),
+                        "category": categorize(part),
+                    }
+                )
 
     return expenses, udhar

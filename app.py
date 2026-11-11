@@ -381,7 +381,9 @@ with tabs[0]:
     audio = st.audio_input("Record your expenses", key="mic", label_visibility="collapsed")
     with st.expander("📲 Or forward a WhatsApp voice note (OGG, M4A, MP3, WAV)"):
         upload = st.file_uploader(
-            "Upload audio", type=["ogg", "m4a", "mp3", "wav", "aac"], label_visibility="collapsed"
+            "Upload audio",
+            type=["ogg", "opus", "oga", "m4a", "mp3", "wav", "aac", "flac"],
+            label_visibility="collapsed",
         )
 
     active_audio = audio or upload
@@ -391,7 +393,8 @@ with tabs[0]:
         if st.session_state.get("last_audio") != digest:
             try:
                 with st.spinner("Understanding your voice with Gnani Prisma..."):
-                    heard = transcribe(payload, getattr(active_audio, "name", "voice.wav"), lang_code)
+                    label = getattr(active_audio, "name", "") or getattr(active_audio, "type", "")
+                    heard = transcribe(payload, label, lang_code)
                 st.session_state["voice_text"] = heard
                 st.session_state["last_audio"] = digest
             except SttError as exc:

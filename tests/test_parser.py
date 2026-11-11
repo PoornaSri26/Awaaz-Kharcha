@@ -29,6 +29,25 @@ def test_parses_multiple_expenses_in_one_breath():
     assert {row["date"] for row in rows} == {TODAY.isoformat()}
 
 
+def test_comma_less_gnani_transcript_keeps_every_item():
+    # Gnani Prisma really returns "चाय ₹20 ऑटो ₹80 लंच ₹150" for
+    # "chai twenty rupees, auto eighty rupees, lunch one hundred fifty".
+    rows, _ = parser.parse_expenses("चाय ₹20 ऑटो ₹80 लंच ₹150", today=TODAY)
+
+    assert [row["amount"] for row in rows] == [20.0, 80.0, 150.0]
+    assert [row["item"] for row in rows] == ["चाय", "ऑटो", "लंच"]
+    assert [row["category"] for row in rows] == ["Food", "Travel", "Food"]
+
+    rows, _ = parser.parse_expenses("chai 20 auto 80 lunch 150", today=TODAY)
+    assert [row["amount"] for row in rows] == [20.0, 80.0, 150.0]
+
+    rows, udhar = parser.parse_expenses(
+        "chai 20 auto 80 lunch 150 aur Ravi ko 500 udhar diya", today=TODAY
+    )
+    assert [row["amount"] for row in rows] == [20.0, 80.0, 150.0]
+    assert [row["amount"] for row in udhar] == [500.0]  # udhar stays out of expenses
+
+
 def test_quantity_is_not_mistaken_for_the_amount():
     rows, _ = parser.parse_expenses("2 chai 20", today=TODAY)
 
