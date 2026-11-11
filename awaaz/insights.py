@@ -26,6 +26,147 @@ FORECAST_WORDS = (
     "mahine ke end", "महीने के अंत", "నెల చివర",
 )
 
+WEEKDAY_NAMES = {
+    "en-IN": {
+        "Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday",
+        "Thursday": "Thursday", "Friday": "Friday", "Saturday": "Saturday", "Sunday": "Sunday",
+    },
+    "hi-IN": {
+        "Monday": "सोमवार", "Tuesday": "मंगलवार", "Wednesday": "बुधवार",
+        "Thursday": "गुरुवार", "Friday": "शुक्रवार", "Saturday": "शनिवार", "Sunday": "रविवार",
+    },
+    "te-IN": {
+        "Monday": "సోమవారం", "Tuesday": "మంగళవారం", "Wednesday": "బుధవారం",
+        "Thursday": "గురువారం", "Friday": "శుక్రవారం", "Saturday": "శనివారం", "Sunday": "ఆదివారం",
+    },
+}
+
+_I18N = {
+    "en-IN": {
+        "no_history": "Log your first expense to unlock weekly insights.",
+        "weekday_heavy": "{day}s are your heaviest days, averaging {amount}.",
+        "weekly": (
+            "You spent {total} in the last 7 days; {top} was your biggest bucket "
+            "at {amount}{item}.{streak}"
+        ),
+        "weekly_item": " (mostly {item})",
+        "weekly_streak": " {days}-day logging streak — keep it going!",
+        "scope_overall": "overall",
+        "scope_month": "this month",
+        "scope_today": "today",
+        "scope_week": "in the last 7 days",
+        "scope_prev_week": "last week",
+        "scope_in": "in {label}",
+        "ask_empty": "Ask me something like 'is mahine kitna kharch hua?' or 'chai pe kitna gaya?'.",
+        "ask_nothing": "You have not recorded anything yet. Log an expense and ask me again.",
+        "budget_unset": "Set a monthly budget in the sidebar and I will track what is left.",
+        "budget_over": "You are over budget by {over}. {spent} spent of {budget} this month.",
+        "budget_left": "{left} left of your {budget} budget, about {per_day} a day for the remaining {days} days.",
+        "forecast_none": "Nothing is logged this month yet, so there is no pace to project.",
+        "forecast_base": "At {pace} a day you are heading for {projected} this month",
+        "forecast_cross": ", crossing your {budget} budget around {date}.",
+        "forecast_inside": ", which stays inside your {budget} budget.",
+        "forecast_end": ".",
+        "khata_none_person": "Nothing pending with {person}. {amount} is already settled.",
+        "khata_parts": "{person} {parts}.",
+        "khata_owes": "owes you {amount}",
+        "khata_you_owe": "you owe {amount}",
+        "khata_settled": "Every khata entry is settled. Nothing pending.",
+        "khata_summary": (
+            "{owed} is pending to come back to you from {people} people, and you owe {taken}."
+        ),
+        "no_expenses": "No expenses {label}.",
+        "average": "Your average is {avg} per day {label} ({total} over {days} days).",
+        "biggest": "Your biggest expense {label} was {item} at {amount} on {date}.",
+        "count": "You logged {count} expenses {label}, totalling {total}.",
+        "topic_none": "Nothing recorded in {topic} {label}.",
+        "topic": "{topic} cost you {amount} {label} across {count} entries ({share}% of your spending).",
+        "top_overall": "Your top categories overall are {cats}.",
+        "items": "You spent {amount} on {names} {label} across {count} entries.",
+        "period": "You spent {total} {label} across {count} expenses. {top} topped the list at {amount}.",
+    },
+    "hi-IN": {
+        "no_history": "साप्ताहिक जानकारी के लिए अपना पहला खर्च जोड़ें।",
+        "weekday_heavy": "{day} को सबसे ज़्यादा खर्च होता है, औसतन {amount}।",
+        "weekly": "पिछले 7 दिनों में आपने {total} खर्च किए; {top} सबसे ऊपर रहा — {amount}{item}।{streak}",
+        "weekly_item": " (ज़्यादातर {item})",
+        "weekly_streak": " {days} दिन का स्ट्रीक — ऐसे ही जारी रखें!",
+        "scope_overall": "कुल मिलाकर",
+        "scope_month": "इस महीने",
+        "scope_today": "आज",
+        "scope_week": "पिछले 7 दिनों में",
+        "scope_prev_week": "पिछले हफ्ते",
+        "scope_in": "{label} में",
+        "ask_empty": "मुझसे पूछिए जैसे 'is mahine kitna kharch hua?' या 'chai pe kitna gaya?'।",
+        "ask_nothing": "अभी कुछ दर्ज नहीं है। पहले कोई खर्च जोड़ें, फिर पूछिए।",
+        "budget_unset": "साइडबार में मासिक बजट सेट करें, मैं बाकी रकम बताऊँगा।",
+        "budget_over": "आप बजट से {over} आगे हैं। इस महीने {budget} में से {spent} खर्च हो चुका है।",
+        "budget_left": "आपके {budget} बजट में {left} बचे हैं, बाकी {days} दिनों के लिए रोज़ करीब {per_day}।",
+        "forecast_none": "इस महीने अभी कुछ दर्ज नहीं है, इसलिए अनुमान नहीं लगाया जा सकता।",
+        "forecast_base": "रोज़ {pace} की रफ्तार से महीने के अंत तक करीब {projected} खर्च होगा",
+        "forecast_cross": ", और आपका {budget} का बजट लगभग {date} तक पार हो सकता है।",
+        "forecast_inside": ", जो आपके {budget} के बजट के अंदर रहेगा।",
+        "forecast_end": "।",
+        "khata_none_person": "{person} के साथ कुछ बकाया नहीं। {amount} पहले ही सेटल हो चुका है।",
+        "khata_parts": "{person} {parts}।",
+        "khata_owes": "को आपको {amount} देना है",
+        "khata_you_owe": "को आपको {amount} देना है (आपका उधार)",
+        "khata_settled": "हर खाता एंट्री सेटल है। कुछ भी बकाया नहीं।",
+        "khata_summary": "{people} लोगों से आपको {owed} वापस मिलने बाकी हैं, और आपको {taken} देना है।",
+        "no_expenses": "{label} कोई खर्च नहीं।",
+        "average": "{label} आपका औसत रोज़ {avg} है ({days} दिनों में {total})।",
+        "biggest": "{label} सबसे बड़ा खर्च {item} था — {amount}, {date} को।",
+        "count": "{label} आपने {count} खर्च दर्ज किए, कुल {total}।",
+        "topic_none": "{label} {topic} में कुछ दर्ज नहीं।",
+        "topic": "{label} {topic} पर {amount} खर्च हुए, {count} एंट्री ({share}%)।",
+        "top_overall": "कुल मिलाकर आपकी सबसे बड़ी श्रेणियाँ: {cats}।",
+        "items": "{label} {names} पर {amount} खर्च हुए, {count} एंट्री में।",
+        "period": "{label} आपने {count} खर्चों में {total} खर्च किए। {top} सबसे ऊपर रहा — {amount}।",
+    },
+    "te-IN": {
+        "no_history": "వారపు అంతర్దృష్టుల కోసం మీ మొదటి ఖర్చును నమోదు చేయండి.",
+        "weekday_heavy": "{day} రోజుల్లో ఎక్కువ ఖర్చు అవుతుంది, సగటు {amount}.",
+        "weekly": "గత 7 రోజుల్లో మీరు {total} ఖర్చు చేశారు; {top} ఎక్కువ — {amount}{item}.{streak}",
+        "weekly_item": " (చాలావరకు {item})",
+        "weekly_streak": " {days} రోజుల స్ట్రీక్ — కొనసాగించండి!",
+        "scope_overall": "మొత్తంగా",
+        "scope_month": "ఈ నెల",
+        "scope_today": "ఈ రోజు",
+        "scope_week": "గత 7 రోజుల్లో",
+        "scope_prev_week": "గత వారం",
+        "scope_in": "{label}లో",
+        "ask_empty": "నన్ను 'is mahine kitna kharch hua?' లేదా 'chai pe kitna gaya?' లాగా అడగండి.",
+        "ask_nothing": "ఇంకా ఏమీ నమోదు కాలేదు. ముందుగా ఖర్చును జోడించి మళ్లీ అడగండి.",
+        "budget_unset": "సైడ్‌బార్‌లో నెల బడ్జెట్ సెట్ చేయండి, మిగిలినది నేను చెబుతాను.",
+        "budget_over": "మీరు బడ్జెట్ కంటే {over} ఎక్కువగా ఉన్నారు. ఈ నెల {budget}లో {spent} ఖర్చు చేశారు.",
+        "budget_left": "మీ {budget} బడ్జెట్‌లో {left} మిగిలింది, మిగతా {days} రోజులకు రోజుకు సుమారు {per_day}.",
+        "forecast_none": "ఈ నెల ఇంకా ఏమీ నమోదు కాలేదు, కాబట్టి అంచనా వేయలేము.",
+        "forecast_base": "రోజుకు {pace} చొప్పున నెల చివరికి సుమారు {projected} అవుతుంది",
+        "forecast_cross": ", మీ {budget} బడ్జెట్ సుమారు {date} నాటికి దాటవచ్చు.",
+        "forecast_inside": ", ఇది మీ {budget} బడ్జెట్ లోపలే ఉంటుంది.",
+        "forecast_end": ".",
+        "khata_none_person": "{person}తో పెండింగ్ ఏమీ లేదు. {amount} ఇప్పటికే సెటిల్ అయింది.",
+        "khata_parts": "{person} {parts}.",
+        "khata_owes": "మీకు {amount} ఇవ్వాలి",
+        "khata_you_owe": "మీరు {amount} ఇవ్వాలి",
+        "khata_settled": "అన్ని ఖాతా ఎంట్రీలు సెటిల్ అయ్యాయి. పెండింగ్ ఏమీ లేదు.",
+        "khata_summary": "{people} మంది మీకు {owed} ఇవ్వాల్సి ఉంది, మరియు మీరు {taken} ఇవ్వాలి.",
+        "no_expenses": "{label} ఖర్చులు లేవు.",
+        "average": "{label} మీ సగటు రోజుకు {avg} ({days} రోజుల్లో {total}).",
+        "biggest": "{label} అతిపెద్ద ఖర్చు {item} — {amount}, {date}న.",
+        "count": "{label} మీరు {count} ఖర్చులు నమోదు చేశారు, మొత్తం {total}.",
+        "topic_none": "{label} {topic}లో ఏమీ నమోదు కాలేదు.",
+        "topic": "{label} {topic}పై {amount} ఖర్చు చేశారు, {count} ఎంట్రీలు ({share}%).",
+        "top_overall": "మొత్తంగా మీ అగ్ర వర్గాలు: {cats}.",
+        "items": "{label} {names}పై {amount} ఖర్చు చేశారు, {count} ఎంట్రీలు.",
+        "period": "{label} మీరు {count} ఖర్చుల్లో {total} ఖర్చు చేశారు. {top} అగ్రస్థానంలో — {amount}.",
+    },
+}
+
+
+def _tr(lang: str) -> dict:
+    return _I18N.get(lang) or _I18N["en-IN"]
+
 
 def _indian_group(value: float, decimals: int) -> str:
     """Group digits the Indian way: 1,00,000 rather than 100,000."""
@@ -98,14 +239,8 @@ def summary(expenses: pd.DataFrame, today: dt.date | None = None) -> dict:
     frame = _prep(expenses)
     stamp = pd.Timestamp(today)
     empty = {
-        "today": 0.0,
-        "month": 0.0,
-        "week": 0.0,
-        "prev_month": 0.0,
-        "delta_pct": 0.0,
-        "count": 0,
-        "avg_per_day": 0.0,
-        "top_category": None,
+        "today": 0.0, "month": 0.0, "week": 0.0, "prev_month": 0.0,
+        "delta_pct": 0.0, "count": 0, "avg_per_day": 0.0, "top_category": None,
     }
     if frame.empty:
         return empty
@@ -137,13 +272,7 @@ def budget_status(month_total: float, budget: float, today: dt.date | None = Non
     today = today or dt.date.today()
     days_left = calendar.monthrange(today.year, today.month)[1] - today.day + 1
     if budget <= 0:
-        return {
-            "pct": 0.0,
-            "remaining": 0.0,
-            "days_left": days_left,
-            "per_day": 0.0,
-            "level": "off",
-        }
+        return {"pct": 0.0, "remaining": 0.0, "days_left": days_left, "per_day": 0.0, "level": "off"}
     pct = month_total / budget * 100
     remaining = budget - month_total
     if remaining < 0:
@@ -155,17 +284,12 @@ def budget_status(month_total: float, budget: float, today: dt.date | None = Non
     else:
         level = "ok"
     return {
-        "pct": pct,
-        "remaining": remaining,
-        "days_left": days_left,
-        "per_day": max(remaining, 0.0) / days_left,
-        "level": level,
+        "pct": pct, "remaining": remaining, "days_left": days_left,
+        "per_day": max(remaining, 0.0) / days_left, "level": level,
     }
 
 
-def forecast(
-    expenses: pd.DataFrame, budget: float = 0.0, today: dt.date | None = None
-) -> dict:
+def forecast(expenses: pd.DataFrame, budget: float = 0.0, today: dt.date | None = None) -> dict:
     """Where this month lands if the current pace continues."""
     today = today or dt.date.today()
     frame = _prep(expenses)
@@ -175,11 +299,8 @@ def forecast(
     pace = spent / max(today.day, 1)
     projected = pace * days_in_month
     result = {
-        "spent": spent,
-        "pace": pace,
-        "projected": projected,
-        "days_in_month": days_in_month,
-        "cross_on": None,
+        "spent": spent, "pace": pace, "projected": projected,
+        "days_in_month": days_in_month, "cross_on": None,
         "over_by": max(projected - budget, 0.0) if budget > 0 else 0.0,
     }
     if budget > 0 and pace > 0 and projected > budget:
@@ -191,10 +312,8 @@ def forecast(
 
 
 def anomalies(
-    expenses: pd.DataFrame,
-    today: dt.date | None = None,
-    factor: float = 3.0,
-    minimum: int = 3,
+    expenses: pd.DataFrame, today: dt.date | None = None,
+    factor: float = 3.0, minimum: int = 3,
 ) -> pd.DataFrame:
     """Expenses far above the usual size for their category this month."""
     today = today or dt.date.today()
@@ -215,10 +334,8 @@ def anomalies(
             flagged.append(
                 {
                     "date": row["date"].date().isoformat(),
-                    "item": row["item"],
-                    "amount": float(row["amount"]),
-                    "category": category,
-                    "usual": round(usual, 2),
+                    "item": row["item"], "amount": float(row["amount"]),
+                    "category": category, "usual": round(usual, 2),
                     "times": round(float(row["amount"]) / usual, 1),
                 }
             )
@@ -263,7 +380,9 @@ def top_items(expenses: pd.DataFrame, n: int = 5, today: dt.date | None = None) 
     return grouped
 
 
-def weekday_insight(expenses: pd.DataFrame, today: dt.date | None = None) -> str | None:
+def weekday_insight(
+    expenses: pd.DataFrame, today: dt.date | None = None, lang: str = "en-IN"
+) -> str | None:
     """Spot the weekly pattern, e.g. "Saturdays are your heaviest days"."""
     today = today or dt.date.today()
     frame = _prep(expenses)
@@ -275,15 +394,19 @@ def weekday_insight(expenses: pd.DataFrame, today: dt.date | None = None) -> str
     if len(totals) < 3 or totals.iloc[0] <= 0:
         return None
     top_day = totals.index[0]
-    return f"{top_day}s are your heaviest days, averaging {inr(totals.iloc[0])}."
+    day_name = (WEEKDAY_NAMES.get(lang) or WEEKDAY_NAMES["en-IN"]).get(top_day, top_day)
+    return _tr(lang)["weekday_heavy"].format(day=day_name, amount=inr(totals.iloc[0]))
 
 
-def weekly_insight(expenses: pd.DataFrame, today: dt.date | None = None) -> str:
+def weekly_insight(
+    expenses: pd.DataFrame, today: dt.date | None = None, lang: str = "en-IN"
+) -> str:
     """A single human sentence about the last seven days."""
     today = today or dt.date.today()
     frame = _prep(expenses)
+    tr = _tr(lang)
     if frame.empty:
-        return "Log your first expense to unlock weekly insights."
+        return tr["no_history"]
 
     start = pd.Timestamp(today) - dt.timedelta(days=6)
     week = frame[frame["date"] >= start]
@@ -299,13 +422,13 @@ def weekly_insight(expenses: pd.DataFrame, today: dt.date | None = None) -> str:
     if not top_item_frame.empty:
         item = top_item_frame.groupby("item")["amount"].sum().idxmax()
         if item and item != "General":
-            item_note = f" (mostly {item})"
+            item_note = tr["weekly_item"].format(item=item)
 
     streak = _logging_streak(frame, today)
-    streak_note = f" {streak}-day logging streak — keep it going!" if streak >= 2 else ""
-    return (
-        f"You spent {inr(total)} in the last 7 days; {top_category} was your "
-        f"biggest bucket at {inr(top_amount)}{item_note}.{streak_note}"
+    streak_note = tr["weekly_streak"].format(days=streak) if streak >= 2 else ""
+    return tr["weekly"].format(
+        total=inr(total), top=top_category, amount=inr(top_amount),
+        item=item_note, streak=streak_note,
     )
 
 
@@ -329,28 +452,31 @@ def _logging_streak(frame: pd.DataFrame, today: dt.date) -> int:
 
 # ---------------- VOICE Q&A ----------------
 
+
 def _has(query: str, words: tuple[str, ...]) -> bool:
     return any(word_in(query, w) for w in words)
 
 
-def _scope(expenses: pd.DataFrame, query: str, today: dt.date) -> tuple[pd.DataFrame, str]:
-    """Narrow the data to whatever period the question talks about."""
+def _scope(expenses: pd.DataFrame, query: str, today: dt.date, lang: str = "en-IN"):
+    """Narrow the data to the period the question talks about; returns (frame, label)."""
+    tr = _tr(lang)
     if not expenses.empty:
         if _has(query, LAST_MONTH_WORDS):
             prev = shift_month(today)
-            return month_frame(expenses, prev), f"in {prev.strftime('%B %Y')}"
+            label = prev.strftime("%B %Y") if lang == "en-IN" else prev.strftime("%m/%Y")
+            return month_frame(expenses, prev), tr["scope_in"].format(label=label)
         if _has(query, MONTH_WORDS):
-            return month_frame(expenses, today), "this month"
+            return month_frame(expenses, today), tr["scope_month"]
         if _has(query, TODAY_WORDS):
-            return expenses[expenses["date"] == pd.Timestamp(today)], "today"
+            return expenses[expenses["date"] == pd.Timestamp(today)], tr["scope_today"]
         if _has(query, PREV_WORDS):
             start = pd.Timestamp(today) - dt.timedelta(days=13)
             end = pd.Timestamp(today) - dt.timedelta(days=7)
-            return expenses[(expenses["date"] >= start) & (expenses["date"] <= end)], "last week"
+            return expenses[(expenses["date"] >= start) & (expenses["date"] <= end)], tr["scope_prev_week"]
         if _has(query, WEEK_WORDS):
             start = pd.Timestamp(today) - dt.timedelta(days=6)
-            return expenses[expenses["date"] >= start], "in the last 7 days"
-    return expenses, "overall"
+            return expenses[expenses["date"] >= start], tr["scope_week"]
+    return expenses, tr["scope_overall"]
 
 
 def _topic(query: str) -> str | None:
@@ -398,58 +524,52 @@ def answer_query(
     udhar: pd.DataFrame | None = None,
     budget: float = 0.0,
     today: dt.date | None = None,
+    lang: str = "en-IN",
 ) -> str:
-    """Answer a spoken/spoken-style question about spending, offline."""
+    """Answer a spoken-style question about spending, offline, in the chosen language."""
     today = today or dt.date.today()
     q = (query or "").lower().strip()
     frame = _prep(expenses)
     khata = udhar if udhar is not None else pd.DataFrame()
+    tr = _tr(lang)
 
     if not q:
-        return "Ask me something like 'is mahine kitna kharch hua?' or 'chai pe kitna gaya?'."
+        return tr["ask_empty"]
     if frame.empty and (khata is None or len(khata) == 0):
-        return "You have not recorded anything yet. Log an expense and ask me again."
+        return tr["ask_nothing"]
 
     # 1. Budget question
     if _has(q, BUDGET_WORDS):
         if budget <= 0:
-            return "Set a monthly budget in the sidebar and I will track what is left."
+            return tr["budget_unset"]
         month_total = float(month_frame(frame, today)["amount"].sum())
         status = budget_status(month_total, budget, today)
         if status["level"] == "over":
-            return (
-                f"You are over budget by {inr(abs(status['remaining']))}. "
-                f"{inr(month_total)} spent of {inr(budget)} this month."
+            return tr["budget_over"].format(
+                over=inr(abs(status["remaining"])), spent=inr(month_total), budget=inr(budget),
             )
-        return (
-            f"{inr(status['remaining'])} left of your {inr(budget)} budget, "
-            f"about {inr(status['per_day'])} a day for the remaining {status['days_left']} days."
+        return tr["budget_left"].format(
+            left=inr(status["remaining"]), budget=inr(budget),
+            per_day=inr(status["per_day"]), days=status["days_left"],
         )
 
     # 2. Forecast question
     if _has(q, FORECAST_WORDS):
         pace = forecast(frame, budget, today)
         if pace["spent"] <= 0:
-            return "Nothing is logged this month yet, so there is no pace to project."
-        answer = (
-            f"At {inr(pace['pace'])} a day you are heading for "
-            f"{inr(pace['projected'])} this month"
-        )
+            return tr["forecast_none"]
+        answer = tr["forecast_base"].format(pace=inr(pace["pace"]), projected=inr(pace["projected"]))
         if pace["cross_on"] is not None:
-            answer += (
-                f", crossing your {inr(budget)} budget around "
-                f"{pace['cross_on'].strftime('%d %b')}."
-            )
+            answer += tr["forecast_cross"].format(budget=inr(budget), date=pace["cross_on"].strftime("%d %b"))
         elif budget > 0:
-            answer += f", which stays inside your {inr(budget)} budget."
+            answer += tr["forecast_inside"].format(budget=inr(budget))
         else:
-            answer += "."
+            answer += tr["forecast_end"]
         return answer
 
     # 3. Udhar / khata question
     if _has(q, UDHAR_WORDS) and khata is not None and len(khata) > 0:
         pending = khata[khata["status"] == "Pending"] if "status" in khata else khata
-        # Partial payments mean the amount owed is the unpaid remainder.
         money = "remaining" if "remaining" in pending.columns else "amount"
         person = _person_from_query(q, khata)
         if person:
@@ -457,76 +577,74 @@ def answer_query(
             if person_rows.empty:
                 settled = khata[(khata["person"] == person) & (khata["status"] == "Settled")]
                 amount = float(settled["amount"].sum()) if not settled.empty else 0.0
-                return f"Nothing pending with {person}. {inr(amount)} is already settled."
+                return tr["khata_none_person"].format(person=person, amount=inr(amount))
             owed = float(person_rows.loc[person_rows["type"].str.contains("Lent", na=False), money].sum())
             taken = float(person_rows[money].sum()) - owed
             parts = []
             if owed:
-                parts.append(f"owes you {inr(owed)}")
+                parts.append(tr["khata_owes"].format(amount=inr(owed)))
             if taken:
-                parts.append(f"you owe {inr(taken)}")
-            return f"{person} {' and '.join(parts)}.".capitalize()
+                parts.append(tr["khata_you_owe"].format(amount=inr(taken)))
+            joined = " and ".join(parts) if lang == "en-IN" else ", ".join(parts)
+            out = tr["khata_parts"].format(person=person, parts=joined)
+            return out.capitalize() if lang == "en-IN" else out
         if pending.empty:
-            return "Every khata entry is settled. Nothing pending."
-        owed_total = float(
-            pending.loc[pending["type"].astype(str).str.contains("Lent", na=False), money].sum()
-        )
+            return tr["khata_settled"]
+        owed_total = float(pending.loc[pending["type"].astype(str).str.contains("Lent", na=False), money].sum())
         taken_total = float(pending[money].sum()) - owed_total
-        return (
-            f"{inr(owed_total)} is pending to come back to you from "
-            f"{pending['person'].nunique()} people, and you owe {inr(taken_total)}."
+        return tr["khata_summary"].format(
+            owed=inr(owed_total), people=pending["person"].nunique(), taken=inr(taken_total),
         )
 
-    scope, label = _scope(frame, q, today)
+    scope, label = _scope(frame, q, today, lang)
     scope_total = float(scope["amount"].sum())
 
-    # 3. Averages / biggest / counts
+    # 4. Averages / biggest / counts
     if _has(q, AVERAGE_WORDS):
         if scope.empty:
-            return f"No expenses {label}."
+            return tr["no_expenses"].format(label=label)
         days = max((scope["date"].max() - scope["date"].min()).days + 1, 1)
-        return f"Your average is {inr(scope_total / days)} per day {label} ({inr(scope_total)} over {days} days)."
+        return tr["average"].format(avg=inr(scope_total / days), label=label, total=inr(scope_total), days=days)
 
     if _has(q, BIGGEST_WORDS):
         if scope.empty:
-            return f"No expenses {label}."
+            return tr["no_expenses"].format(label=label)
         row = scope.loc[scope["amount"].idxmax()]
-        return f"Your biggest expense {label} was {row['item']} at {inr(row['amount'])} on {row['date'].date()}."
+        return tr["biggest"].format(
+            label=label, item=row["item"], amount=inr(row["amount"]), date=row["date"].date(),
+        )
 
     if _has(q, COUNT_WORDS):
-        return f"You logged {len(scope)} expenses {label}, totalling {inr(scope_total)}."
+        return tr["count"].format(count=len(scope), label=label, total=inr(scope_total))
 
-    # 4. Category or item question inside the period
+    # 5. Category or item question inside the period
     topic = _topic(q)
     if topic:
         matched = scope[scope["category"] == topic]
         if matched.empty:
-            return f"Nothing recorded in {topic} {label}."
+            return tr["topic_none"].format(topic=topic, label=label)
         share = matched["amount"].sum() / scope_total * 100 if scope_total else 0
-        return (
-            f"{topic} cost you {inr(matched['amount'].sum())} {label} "
-            f"across {len(matched)} entries ({share:.0f}% of your spending)."
+        return tr["topic"].format(
+            topic=topic, amount=inr(matched["amount"].sum()), label=label,
+            count=len(matched), share=f"{share:.0f}",
         )
 
-    if label == "overall" and _has(q, TOP_WORDS) and not frame.empty:
+    if label == tr["scope_overall"] and _has(q, TOP_WORDS) and not frame.empty:
         by_category = frame.groupby("category")["amount"].sum().sort_values(ascending=False)
         top_three = ", ".join(f"{cat} {inr(amt)}" for cat, amt in by_category.head(3).items())
-        return f"Your top categories overall are {top_three}."
+        return tr["top_overall"].format(cats=top_three)
 
     item_rows = _item_match(scope, q)
     if item_rows is not None and len(item_rows) > 0:
         names = ", ".join(item_rows["item"].astype(str).value_counts().head(3).index)
-        return (
-            f"You spent {inr(item_rows['amount'].sum())} on {names} {label} "
-            f"across {len(item_rows)} entries."
-        )
+        return tr["items"].format(amount=inr(item_rows["amount"].sum()), names=names, label=label, count=len(item_rows))
 
-    # 5. Period total, or a friendly overall summary
+    # 6. Period total, or a friendly overall summary
     by_category = scope.groupby("category")["amount"].sum().sort_values(ascending=False)
     if scope.empty:
-        return f"No expenses {label}."
+        return tr["no_expenses"].format(label=label)
     top_category = by_category.index[0]
-    return (
-        f"You spent {inr(scope_total)} {label} across {len(scope)} expenses. "
-        f"{top_category} topped the list at {inr(by_category.iloc[0])}."
+    return tr["period"].format(
+        total=inr(scope_total), label=label, count=len(scope),
+        top=top_category, amount=inr(by_category.iloc[0]),
     )

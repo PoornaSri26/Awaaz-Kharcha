@@ -809,7 +809,7 @@ with tabs[3]:
         st.info(T["empty_msg"])
     else:
         st.markdown(
-            f'<div class="insight-card">{insights.weekly_insight(expenses_df, today)}</div>',
+            f'<div class="insight-card">{insights.weekly_insight(expenses_df, today, lang_code)}</div>',
             unsafe_allow_html=True,
         )
 
@@ -899,7 +899,7 @@ with tabs[3]:
                 )
         with col_b:
             st.markdown(f"##### 🗓️ {T['patterns']}")
-            pattern = insights.weekday_insight(expenses_df, today)
+            pattern = insights.weekday_insight(expenses_df, today, lang_code)
             st.write(pattern or "Log a few more days to reveal your weekly pattern.")
             streak = insights.logging_streak(expenses_df, today)
             st.metric(T["streak"], f"{streak} day{'s' if streak != 1 else ''}")
@@ -1036,7 +1036,9 @@ with tabs[5]:
 
     if question.strip():
         st.markdown(f"**{T['you_asked']}:** *\"{question.strip()}\"*")
-        answer = insights.answer_query(question, expenses_df, udhar_df, budget=budget, today=today)
+        answer = insights.answer_query(
+            question, expenses_df, udhar_df, budget=budget, today=today, lang=lang_code
+        )
         st.success(f"🤖 {answer}")
 
 # ---------------- UNDO ----------------
