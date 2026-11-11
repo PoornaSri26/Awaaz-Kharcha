@@ -47,6 +47,9 @@ def _prep(frame: pd.DataFrame | None) -> pd.DataFrame:
         out["category"] = "Other"
     if "item" not in out.columns:
         out["item"] = "General"
+    # Money coming in is not spending: keep it out of totals, charts and answers.
+    if "kind" in out.columns:
+        out = out[out["kind"].astype(str).str.lower() != "income"]
     return out
 
 

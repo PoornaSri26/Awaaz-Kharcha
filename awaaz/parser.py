@@ -158,6 +158,8 @@ LENT_HINTS = (
 
 FILLER = (
     r"\b(rupees?|rupaye|rupaiye|rupay|rs|inr|ka|ke|ki|ko|se|ne|me|mein|pe|par|liye|"
+    r"at|from|by|using|via|upi|gpay|phonepe|paytm|cash|card|netbanking|credit|debit|"
+    r"received|receive|credited|earned|bought|buy|purchased|got|"
     r"for|on|spent|spend|paid|pay|gaye|gaya|hua|huya|tha|thi|the|and|aur|phir|then|"
     r"aaj|today|kal|yesterday|parso|kharcha|kharch|karchu|karchif|pettanu|ayindi|"
     r"udhar|diya|diye|liya|liye|lent|borrow|borrowed|gave|give|to|from|please)\b|"
@@ -244,6 +246,67 @@ def normalize_category(name: str) -> str:
         return LEGACY_CATEGORY_MAP[cleaned.lower()]
     guessed = categorize(cleaned)
     return guessed if guessed != "Other" else "Other"
+
+
+#: How the money moved. Longest phrase first so "credit card" beats "card".
+PAYMENT_MODES = {
+    "google pay": "UPI",
+    "credit card": "Card",
+    "debit card": "Card",
+    "net banking": "Netbanking",
+    "bank transfer": "Netbanking",
+    "phonepe": "UPI",
+    "netbanking": "Netbanking",
+    "gpay": "UPI",
+    "paytm": "UPI",
+    "upi": "UPI",
+    "cash": "Cash",
+    "card": "Card",
+    "कैश": "Cash",
+    "యూపీఐ": "UPI",
+    "క్యాష్": "Cash",
+}
+
+#: Words that turn a spend into money coming in.
+INCOME_WORDS = (
+    "received", "receive", "salary", "income", "credited", "refund", "earned", "got paid",
+    "मिला", "मिले", "जीत", "వచ్చింది", "జీతం", "ఆదాయం",
+)
+
+_MERCHANT_RE = re.compile(
+    r"\b(?:at|from|se|से|నుండి)\s+([A-Za-z][A-Za-z&.'-]*(?:\s+[A-Za-z][A-Za-z&.'-]*){0,2})",
+    re.IGNORECASE,
+)
+_MERCHANT_STOP = {
+    "by", "using", "via", "for", "on", "with", "and", "aur", "rs", "inr", "rupees",
+    "today", "aaj", "kal", "parso", "upi", "cash", "card", "gpay", "paytm", "phonepe",
+}
+
+
+def detect_payment_mode(text: str) -> str | None:
+    """Which rail the money used, if the sentence says so."""
+    lowered = (text or "").lower()
+    for phrase in sorted(PAYMENT_MODES, key=len, reverse=True):
+        if _word_in(lowered, phrase):
+            return PAYMENT_MODES[phrase]
+    return None
+
+
+def detect_kind(text: str) -> str:
+    """Income when the sentence talks about money arriving."""
+    lowered = (text or "").lower()
+    return "Income" if any(_word_in(lowered, w) for w in INCOME_WORDS) else "Expense"
+
+
+def detect_merchant(text: str) -> str | None:
+    """Shop or person from "at Paradise" / "from Amazon"."""
+    match = _MERCHANT_RE.search(text or "")
+    if not match:
+        return None
+    words = [word for word in match.group(1).split() if word.lower() not in _MERCHANT_STOP]
+    if not words or words[0].isdigit():
+        return None
+    return _title(" ".join(words[:3]))
 
 
 def _date_offset(text: str) -> int | None:
@@ -346,6 +409,8 @@ def parse_expenses(
         return expenses, udhar
 
     base_date = detect_date(normalized, today)
+    # A mode said once at the end ("... by UPI") applies to every item.
+    sentence_mode = detect_payment_mode(normalized)
 
     for chunk in re.split(SPLITTERS, normalized, flags=re.IGNORECASE):
         for part in _item_segments(chunk.strip()):
@@ -373,12 +438,21 @@ def parse_expenses(
                     }
                 )
             else:
+                merchant = detect_merchant(part)
+                item_text = _clean_item(part)
+                if merchant:  # the shop is its own field, not part of the item
+                    item_text = re.sub(
+                        re.escape(merchant), " ", item_text, flags=re.IGNORECASE
+                    ).strip()
                 expenses.append(
                     {
                         "date": row_date.isoformat(),
-                        "item": _title(_clean_item(part)) or "General",
+                        "item": _title(item_text) or "General",
                         "amount": round(amount, 2),
                         "category": categorize(part),
+                        "merchant": merchant,
+                        "payment_mode": detect_payment_mode(part) or sentence_mode,
+                        "kind": detect_kind(part),
                     }
                 )
 

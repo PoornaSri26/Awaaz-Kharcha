@@ -157,6 +157,9 @@ EXTRA = {
         "delete_selected": "चुनी हुई हटाएँ", "entries": "एंट्री",
         "no_match": "इन फ़िल्टर से कुछ नहीं मिला।", "you_asked": "आपने पूछा",
         "ask_placeholder": "इस महीने कितना खर्च हुआ?",
+        "dup_warn": "यह एंट्री अभी-अभी सेव हुई लगती है", "dup_confirm": "फिर भी सेव करें",
+        "kind_label": "किस्म", "merchant_label": "दुकान/जगह", "mode_label": "भुगतान",
+        "income_label": "आमदनी", "paid_by": "तरीका",
     },
     "te-IN": {
         "settings": "సెట్టింగ్‌లు", "export": "ఎక్స్‌పోర్ట్", "expenses_csv": "ఖర్చుల CSV",
@@ -186,6 +189,9 @@ EXTRA = {
         "delete_selected": "ఎంచుకున్నవి తొలగించండి", "entries": "ఎంట్రీలు",
         "no_match": "ఈ ఫిల్టర్లకు ఏమీ దొరకలేదు.", "you_asked": "మీరు అడిగింది",
         "ask_placeholder": "ఈ నెల ఎంత ఖర్చు అయింది?",
+        "dup_warn": "ఈ ఎంట్రీ ఇప్పుడే సేవ్ అయినట్టుంది", "dup_confirm": "అయినా సేవ్ చేయండి",
+        "kind_label": "రకం", "merchant_label": "దుకాణం", "mode_label": "చెల్లింపు",
+        "income_label": "ఆదాయం", "paid_by": "విధానం",
     },
     "en-IN": {
         "settings": "Settings", "export": "Export", "expenses_csv": "Expenses CSV",
@@ -215,6 +221,9 @@ EXTRA = {
         "delete_selected": "Delete selected", "entries": "entries",
         "no_match": "No entries match these filters.", "you_asked": "You asked",
         "ask_placeholder": "is mahine kitna kharch hua?",
+        "dup_warn": "This looks like a duplicate of an entry saved minutes ago",
+        "dup_confirm": "Save anyway", "kind_label": "Kind", "merchant_label": "Merchant",
+        "mode_label": "Payment", "income_label": "Income", "paid_by": "Via",
     },
 }
 
@@ -447,7 +456,15 @@ def render_parsed(rows: list[dict], udhar_rows: list[dict]) -> None:
         preview["amount"] = preview["amount"].map(insights.inr)
         preview["category"] = preview["category"].map(lambda c: f"{CAT_EMOJI.get(c, '📦')} {c}")
         st.dataframe(
-            preview.rename(columns={"date": "date", "item": "item", "amount": "amount"}),
+            preview[
+                ["date", "item", "amount", "category", "merchant", "payment_mode", "kind"]
+            ].rename(
+                columns={
+                    "merchant": T["merchant_label"],
+                    "payment_mode": T["mode_label"],
+                    "kind": T["kind_label"],
+                }
+            ),
             use_container_width=True,
             hide_index=True,
         )
@@ -456,6 +473,16 @@ def render_parsed(rows: list[dict], udhar_rows: list[dict]) -> None:
         preview = pd.DataFrame(udhar_rows)
         preview["amount"] = preview["amount"].map(insights.inr)
         st.dataframe(preview, use_container_width=True, hide_index=True)
+
+
+def duplicate_guard(rows: list[dict], key: str) -> bool:
+    """Warn about a repeat entry and require an explicit confirmation."""
+    dupes = store.recent_duplicates(rows)
+    if not dupes:
+        return True
+    names = ", ".join(f"#{d['id']} {d['item']} {insights.inr(d['amount'])}" for d in dupes)
+    st.warning(f"{T['dup_warn']}: {names}")
+    return st.checkbox(T["dup_confirm"], key=f"{key}_dup")
 
 
 def review_block(widget_key: str, source: str) -> None:
@@ -471,12 +498,14 @@ def review_block(widget_key: str, source: str) -> None:
         return
 
     render_parsed(rows, udhar_rows)
+    can_save = duplicate_guard(rows, widget_key)
     col_save, col_redo = st.columns([3, 1])
     if col_save.button(
         f"✅ {T['save']} ({len(rows) + len(udhar_rows)})",
         type="primary",
         key=f"{widget_key}_save",
         use_container_width=True,
+        disabled=not can_save,
     ):
         save_rows(rows, udhar_rows, source)
     if col_redo.button("↩ Redo", key=f"{widget_key}_redo", use_container_width=True):
@@ -545,6 +574,7 @@ with tabs[1]:
                 type="primary",
                 key="typed_save",
                 use_container_width=True,
+                disabled=not duplicate_guard(rows, "typed"),
             ):
                 save_rows(rows, udhar_rows, "typed")
         else:
@@ -788,7 +818,9 @@ with tabs[4]:
         if view.empty:
             st.info("No entries match these filters.")
         else:
-            editable = view[["id", "date", "item", "amount", "category", "source"]].copy()
+            editable = view[
+                ["id", "date", "item", "amount", "category", "merchant", "payment_mode", "source"]
+            ].copy()
             editable["date"] = editable["date"].dt.date
             editable.insert(0, "select", False)
             original = editable.set_index("id")
@@ -803,6 +835,12 @@ with tabs[4]:
                     "date": st.column_config.DateColumn("Date", format="DD-MM-YYYY"),
                     "amount": st.column_config.NumberColumn("Amount", format="₹%.0f", min_value=0.0),
                     "category": st.column_config.SelectboxColumn("Category", options=CATEGORY_CHOICES),
+                    "merchant": st.column_config.TextColumn(
+                        T["merchant_label"], disabled=True, width="small"
+                    ),
+                    "payment_mode": st.column_config.TextColumn(
+                        T["paid_by"], disabled=True, width="small"
+                    ),
                     "source": st.column_config.TextColumn("Via", disabled=True, width="small"),
                 },
                 key="history_editor",

@@ -18,7 +18,18 @@ import pandas as pd
 from . import config
 from .parser import normalize_category
 
-EXPENSE_COLUMNS = ["id", "date", "item", "amount", "category", "source", "created_at"]
+EXPENSE_COLUMNS = [
+    "id",
+    "date",
+    "item",
+    "amount",
+    "category",
+    "merchant",
+    "payment_mode",
+    "kind",
+    "source",
+    "created_at",
+]
 UDHAR_COLUMNS = ["id", "date", "person", "amount", "paid", "remaining", "type", "status", "created_at"]
 
 
@@ -50,6 +61,9 @@ class Store:
                     item TEXT NOT NULL,
                     amount REAL NOT NULL,
                     category TEXT NOT NULL,
+                    merchant TEXT,
+                    payment_mode TEXT,
+                    kind TEXT NOT NULL DEFAULT 'Expense',
                     source TEXT NOT NULL DEFAULT 'voice',
                     created_at TEXT NOT NULL
                 );
@@ -79,6 +93,19 @@ class Store:
             conn.execute(
                 "UPDATE udhar SET paid = amount WHERE status = 'Settled' AND paid < amount"
             )
+            expense_columns = {
+                row["name"] for row in conn.execute("PRAGMA table_info(expenses)")
+            }
+            for column, ddl in (
+                ("merchant", "ALTER TABLE expenses ADD COLUMN merchant TEXT"),
+                ("payment_mode", "ALTER TABLE expenses ADD COLUMN payment_mode TEXT"),
+                (
+                    "kind",
+                    "ALTER TABLE expenses ADD COLUMN kind TEXT NOT NULL DEFAULT 'Expense'",
+                ),
+            ):
+                if column not in expense_columns:
+                    conn.execute(ddl)
 
     # ---------------- expenses ----------------
 
@@ -94,13 +121,17 @@ class Store:
                 if amount <= 0:
                     continue
                 cursor = conn.execute(
-                    "INSERT INTO expenses (date, item, amount, category, source, created_at)"
-                    " VALUES (?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO expenses"
+                    " (date, item, amount, category, merchant, payment_mode, kind, source, created_at)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (
                         str(row.get("date") or dt.date.today().isoformat()),
                         (str(row.get("item") or "General")).strip() or "General",
                         round(amount, 2),
                         normalize_category(row.get("category", "Other")),
+                        (str(row["merchant"]).strip() if row.get("merchant") else None),
+                        row.get("payment_mode"),
+                        "Income" if str(row.get("kind", "")).lower() == "income" else "Expense",
                         source,
                         now,
                     ),
@@ -128,7 +159,8 @@ class Store:
     def expenses(self) -> pd.DataFrame:
         with self._connect() as conn:
             frame = pd.read_sql_query(
-                "SELECT id, date, item, amount, category, source, created_at"
+                "SELECT id, date, item, amount, category, merchant, payment_mode, kind,"
+                " source, created_at"
                 " FROM expenses ORDER BY date ASC, id ASC",
                 conn,
             )
@@ -145,6 +177,9 @@ class Store:
         item: str | None = None,
         amount: float | None = None,
         category: str | None = None,
+        merchant: str | None = None,
+        payment_mode: str | None = None,
+        kind: str | None = None,
     ) -> None:
         fields, values = [], []
         if date is not None:
@@ -159,6 +194,15 @@ class Store:
         if category is not None:
             fields.append("category = ?")
             values.append(normalize_category(category))
+        if merchant is not None:
+            fields.append("merchant = ?")
+            values.append(merchant.strip() or None)
+        if payment_mode is not None:
+            fields.append("payment_mode = ?")
+            values.append(payment_mode)
+        if kind is not None:
+            fields.append("kind = ?")
+            values.append("Income" if kind.lower() == "income" else "Expense")
         if not fields:
             return
         values.append(int(expense_id))
@@ -173,6 +217,29 @@ class Store:
         with self._connect() as conn:
             cursor = conn.execute(f"DELETE FROM expenses WHERE id IN ({placeholders})", ids)
         return cursor.rowcount
+
+    def recent_duplicates(self, rows: list[dict], minutes: int = 2) -> list[dict]:
+        """Entries saved moments ago with the same amount and item."""
+        if not rows:
+            return []
+        cutoff = (dt.datetime.now() - dt.timedelta(minutes=minutes)).isoformat(
+            timespec="seconds"
+        )
+        matches: list[dict] = []
+        with self._connect() as conn:
+            for row in rows:
+                amount = round(float(row.get("amount") or 0), 2)
+                item = str(row.get("item") or "").strip().lower()
+                if amount <= 0:
+                    continue
+                found = conn.execute(
+                    "SELECT id, item, amount, created_at FROM expenses"
+                    " WHERE created_at >= ? AND ROUND(amount, 2) = ? AND LOWER(item) = ?",
+                    (cutoff, amount, item),
+                ).fetchone()
+                if found:
+                    matches.append(dict(found))
+        return matches
 
     # ---------------- udhar / khata ----------------
 

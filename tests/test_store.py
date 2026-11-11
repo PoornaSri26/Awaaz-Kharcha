@@ -22,7 +22,18 @@ def test_add_and_list_expenses(tmp_path):
     assert len(ids) == 2
     frame = store.expenses()
     assert len(frame) == 2
-    assert list(frame.columns) == ["id", "date", "item", "amount", "category", "source", "created_at"]
+    assert list(frame.columns) == [
+        "id",
+        "date",
+        "item",
+        "amount",
+        "category",
+        "merchant",
+        "payment_mode",
+        "kind",
+        "source",
+        "created_at",
+    ]
     assert frame["item"].tolist() == ["Auto", "Chai"]  # ordered by date
     assert set(frame["source"]) == {"voice"}
 
