@@ -167,6 +167,20 @@ EXTRA = {
         "sms_header": "बैंक SMS पेस्ट करें",
         "sms_hint": "जैसे: \"Rs 450 debited at Swiggy\" — यह एंट्री बन जाएगी।",
         "no_amount": "रकम नहीं मिली। 'chai 20' या 'dedh sau (150)' आज़माइए।",
+        "personal_expenses": "मेरे खर्च", "khata_entries": "खाता एंट्री",
+        "whatsapp_hint": "📲 या WhatsApp वॉइस नोट भेजिए (OGG, M4A, MP3, WAV)",
+        "listening": "Gnani Prisma आपकी आवाज़ समझ रहा है...",
+        "stt_failed": "ठीक से सुनाई नहीं दिया। माइक के थोड़ा पास बोलिए।",
+        "technical": "तकनीकी जानकारी",
+        "no_pending": "कोई बाकी खाता एंट्री नहीं। 'Ravi ko 500 udhar diya' कहिए या नीचे जोड़िए।",
+        "khata_added": "खाता एंट्री जुड़ गई",
+        "interpreting": "Prisma आपका सवाल समझ रहा है...",
+        "ask_failed": "सवाल समझ नहीं आया। नीचे टाइप कीजिए।",
+        "undone": "वापस लिया", "redo": "↩ फिर से",
+        "budget_used": "{spent} / {budget} इस्तेमाल ({pct}%) · {days} दिन बाकी · रोज़ {per_day} में बजट के अंदर रहेंगे",
+        "over_budget": "⚠️ बजट से {amount} ज़्यादा। अब थोड़ा रुकिए।",
+        "nudge_note": "{pct}% बजट इस्तेमाल हो गया, अभी {days} दिन बाकी हैं।",
+        "on_track": "💚 आप ट्रैक पर हैं — इस महीने {amount} बचेंगे।",
     },
     "te-IN": {
         "settings": "సెట్టింగ్‌లు", "export": "ఎక్స్‌పోర్ట్", "expenses_csv": "ఖర్చుల CSV",
@@ -206,6 +220,20 @@ EXTRA = {
         "sms_header": "బ్యాంక్ SMS పేస్ట్ చేయండి",
         "sms_hint": "ఉదా: \"Rs 450 debited at Swiggy\" — ఇది ఎంట్రీగా మారుతుంది.",
         "no_amount": "మొత్తం దొరకలేదు. 'chai 20' లేదా 'dedh sau (150)' ప్రయత్నించండి.",
+        "personal_expenses": "నా ఖర్చులు", "khata_entries": "ఖాతా ఎంట్రీలు",
+        "whatsapp_hint": "📲 లేదా వాట్సాప్ వాయిస్ నోట్ పంపండి (OGG, M4A, MP3, WAV)",
+        "listening": "Gnani Prisma మీ స్వరం అర్థం చేసుకుంటోంది...",
+        "stt_failed": "స్పష్టంగా వినిపించలేదు. మైక్ దగ్గరగా మాట్లాడండి.",
+        "technical": "సాంకేతిక వివరాలు",
+        "no_pending": "పెండింగ్ ఖాతా ఎంట్రీలు లేవు. 'Ravi ko 500 udhar diya' అనండి లేదా కింద జోడించండి.",
+        "khata_added": "ఖాతా ఎంట్రీ జోడించబడింది",
+        "interpreting": "Prisma మీ ప్రశ్నను అర్థం చేసుకుంటోంది...",
+        "ask_failed": "ప్రశ్న అర్థం కాలేదు. కింద టైప్ చేయండి.",
+        "undone": "రద్దు చేయబడింది", "redo": "↩ మళ్ళీ",
+        "budget_used": "{spent} / {budget} వాడారు ({pct}%) · {days} రోజులు మిగిలాయి · రోజుకు {per_day}లో బడ్జెట్ లోపల ఉంటారు",
+        "over_budget": "⚠️ బడ్జెట్ కంటే {amount} ఎక్కువ. కొంచెం ఆగండి.",
+        "nudge_note": "బడ్జెట్‌లో {pct}% వాడారు, ఇంకా {days} రోజులు ఉన్నాయి.",
+        "on_track": "💚 మీరు సరైన దారిలో ఉన్నారు — ఈ నెల {amount} మిగులుతుంది.",
     },
     "en-IN": {
         "settings": "Settings", "export": "Export", "expenses_csv": "Expenses CSV",
@@ -245,6 +273,20 @@ EXTRA = {
         "sms_header": "Paste a bank SMS",
         "sms_hint": "e.g. \"Rs 450 debited at Swiggy\" — it becomes an entry you can save.",
         "no_amount": "I could not catch an amount. Try 'chai 20' or 'dedh sau (150)'.",
+        "personal_expenses": "Personal expenses", "khata_entries": "Khata entries",
+        "whatsapp_hint": "📲 Or forward a WhatsApp voice note (OGG, M4A, MP3, WAV)",
+        "listening": "Understanding your voice with Gnani Prisma...",
+        "stt_failed": "I could not hear that clearly. Please try again a little closer to the mic.",
+        "technical": "Technical details",
+        "no_pending": "No pending khata entries. Say 'Ravi ko 500 udhar diya' or add one below.",
+        "khata_added": "Khata entry added",
+        "interpreting": "Prisma is interpreting your question...",
+        "ask_failed": "Could not interpret that question. Try typing it below.",
+        "undone": "Undone", "redo": "↩ Redo",
+        "budget_used": "{spent} of {budget} used ({pct}%) · {days} days left · {per_day}/day keeps you inside the budget",
+        "over_budget": "⚠️ Over budget by {amount}. Time to slow down.",
+        "nudge_note": "You have used {pct}% of your monthly budget with {days} days still to go.",
+        "on_track": "💚 You are on track — {amount} spare this month.",
     },
 }
 
@@ -472,7 +514,7 @@ def save_rows(rows: list[dict], udhar_rows: list[dict], source: str) -> None:
 
 def render_parsed(rows: list[dict], udhar_rows: list[dict]) -> None:
     if rows:
-        st.markdown("##### 🛒 Personal expenses")
+        st.markdown(f"##### 🛒 {T['personal_expenses']}")
         preview = pd.DataFrame(rows)
         preview["amount"] = preview["amount"].map(insights.inr)
         preview["category"] = preview["category"].map(lambda c: f"{CAT_EMOJI.get(c, '📦')} {c}")
@@ -490,7 +532,7 @@ def render_parsed(rows: list[dict], udhar_rows: list[dict]) -> None:
             hide_index=True,
         )
     if udhar_rows:
-        st.markdown("##### 🤝 Khata entries")
+        st.markdown(f"##### 🤝 {T['khata_entries']}")
         preview = pd.DataFrame(udhar_rows)
         preview["amount"] = preview["amount"].map(insights.inr)
         st.dataframe(preview, use_container_width=True, hide_index=True)
@@ -515,7 +557,7 @@ def review_block(widget_key: str, source: str) -> None:
     rows, udhar_rows = parse_expenses(edited, today)
 
     if not rows and not udhar_rows:
-        st.warning("I could not catch an amount. Try 'chai 20' or 'dedh sau (150)'.")
+        st.warning(T["no_amount"])
         return
 
     render_parsed(rows, udhar_rows)
@@ -529,7 +571,7 @@ def review_block(widget_key: str, source: str) -> None:
         disabled=not can_save,
     ):
         save_rows(rows, udhar_rows, source)
-    if col_redo.button("↩ Redo", key=f"{widget_key}_redo", use_container_width=True):
+    if col_redo.button(T["redo"], key=f"{widget_key}_redo", use_container_width=True):
         st.session_state["clear_entry"] = True
         st.rerun()
 
@@ -545,7 +587,7 @@ tabs = st.tabs(T["tabs"])
 with tabs[0]:
     st.markdown(f"#### 🎙️ {T['speak']}")
     audio = st.audio_input("Record your expenses", key="mic", label_visibility="collapsed")
-    with st.expander("📲 Or forward a WhatsApp voice note (OGG, M4A, MP3, WAV)"):
+    with st.expander(T["whatsapp_hint"]):
         upload = st.file_uploader(
             "Upload audio",
             type=["ogg", "opus", "oga", "m4a", "mp3", "wav", "aac", "flac"],
@@ -558,7 +600,7 @@ with tabs[0]:
         digest = hashlib.md5(payload).hexdigest()
         if st.session_state.get("last_audio") != digest:
             try:
-                with st.spinner("Understanding your voice with Gnani Prisma..."):
+                with st.spinner(T["listening"]):
                     label = getattr(active_audio, "name", "") or getattr(active_audio, "type", "")
                     heard = transcribe(payload, label, lang_code)
                 st.session_state["voice_text"] = heard
@@ -566,8 +608,8 @@ with tabs[0]:
             except SttError as exc:
                 st.session_state["last_audio"] = digest
                 st.session_state["voice_text"] = ""
-                st.warning("I could not hear that clearly. Please try again a little closer to the mic.")
-                with st.expander("Technical details"):
+                st.warning(T["stt_failed"])
+                with st.expander(T["technical"]):
                     st.code(str(exc))
 
     if st.session_state.get("voice_text"):
@@ -599,7 +641,7 @@ with tabs[1]:
             ):
                 save_rows(rows, udhar_rows, "typed")
         else:
-            st.warning("I could not catch an amount. Try 'chai 20' or 'dedh sau (150)'.")
+            st.warning(T["no_amount"])
 
     st.divider()
     st.markdown(f"##### ⚡ {T['one_tap']}")
@@ -685,28 +727,31 @@ with tabs[2]:
         lent = pending.loc[pending["type"].astype(str).str.contains("Lent", na=False), "amount"].sum()
         taken = pending["amount"].sum() - lent
         k1, k2, k3 = st.columns(3)
-        k1.metric("They owe me", insights.inr(lent))
-        k2.metric("I owe them", insights.inr(taken))
-        k3.metric("People pending", int(pending["person"].nunique()))
-        st.dataframe(
-            pending.assign(amount=pending["amount"].map(insights.inr))[
-                ["date", "person", "amount", "type", "status"]
-            ],
-            use_container_width=True,
-            hide_index=True,
-        )
+        k1.metric(T["owe_me"], insights.inr(lent))
+        k2.metric(T["i_owe"], insights.inr(taken))
+        k3.metric(T["people_pending"], int(pending["person"].nunique()))
+        shown = pending.assign(amount=pending["amount"].map(insights.inr))
+        columns = ["date", "person", "amount", "type", "status"]
+        if "remaining" in pending.columns:
+            shown["remaining"] = pending["remaining"].map(insights.inr)
+            columns = ["date", "person", "amount", "remaining", "type", "status"]
+        st.dataframe(shown[columns], use_container_width=True, hide_index=True)
     else:
-        st.info("No pending khata entries. Say 'Ravi ko 500 udhar diya' or add one below.")
+        st.info(T["no_pending"])
 
-    with st.expander("➕ Add khata entry"):
+    with st.expander(f"➕ {T['add_khata']}"):
         with st.form("khata_form", clear_on_submit=True):
             p1, p2 = st.columns([2, 1])
-            person = p1.text_input("Person", placeholder="Ravi")
-            khata_amount = p2.number_input("Amount (₹)", min_value=0.0, step=50.0, format="%.0f")
+            person = p1.text_input(T["person"], placeholder="Ravi")
+            khata_amount = p2.number_input(
+                T["amount"], min_value=0.0, step=50.0, format="%.2f"
+            )
             p3, p4 = st.columns([1, 1])
-            entry_type = p3.selectbox("Type", ["Lent (Diya)", "Borrowed (Liya)"])
-            khata_date = p4.date_input("Date", value=today, key="khata_date")
-            add_khata = st.form_submit_button("Add entry", type="primary", use_container_width=True)
+            entry_type = p3.selectbox(T["type"], ["Lent (Diya)", "Borrowed (Liya)"])
+            khata_date = p4.date_input(T["date"], value=today, key="khata_date")
+            add_khata = st.form_submit_button(
+                T["add_entry"], type="primary", use_container_width=True
+            )
             if add_khata:
                 if person.strip() and khata_amount > 0:
                     ids = store.add_udhar(
@@ -721,13 +766,13 @@ with tabs[2]:
                         ]
                     )
                     st.session_state["last_saved_udhar_ids"] = ids
-                    st.toast("Khata entry added", icon="✅")
+                    st.toast(T["khata_added"], icon="✅")
                     st.rerun()
                 else:
-                    st.warning("Add a name and an amount above zero.")
+                    st.warning(T["need_khata"])
 
     if not current_udhar.empty:
-        st.markdown("##### All entries")
+        st.markdown(f"##### {T['all_entries']}")
         ledger = current_udhar.copy()
         ledger.insert(0, "select", False)
         edited_ledger = st.data_editor(
@@ -738,7 +783,7 @@ with tabs[2]:
             column_config={
                 "select": st.column_config.CheckboxColumn("✓", width="small"),
                 "id": st.column_config.NumberColumn("ID", width="small"),
-                "amount": st.column_config.NumberColumn("Amount", format="₹%.0f"),
+                "amount": st.column_config.NumberColumn(T["amount"], format="₹%.2f"),
             },
             key="ledger_editor",
         )
@@ -746,15 +791,15 @@ with tabs[2]:
         b1, b2, b3 = st.columns(3)
         if b1.button(f"✅ {T['settle']}", disabled=not selected, use_container_width=True):
             store.set_udhar_status(selected, "Settled")
-            st.toast("Marked as settled", icon="✅")
+            st.toast(T["settled_toast"], icon="✅")
             st.rerun()
         if b2.button("↩ " + T["pending"], disabled=not selected, use_container_width=True):
             store.set_udhar_status(selected, "Pending")
-            st.toast("Back to pending", icon="↩")
+            st.toast(T["reopen_toast"], icon="↩")
             st.rerun()
-        if b3.button("🗑️ Delete", disabled=not selected, use_container_width=True):
+        if b3.button(f"🗑️ {T['delete']}", disabled=not selected, use_container_width=True):
             store.delete_udhar(selected)
-            st.toast("Deleted", icon="🗑️")
+            st.toast(T["deleted"], icon="🗑️")
             st.rerun()
 
 # ---------------- TAB 4: INSIGHTS ----------------
@@ -771,27 +816,36 @@ with tabs[3]:
         if budget > 0:
             st.progress(min(1.0, max(0.0, budget_info["pct"] / 100)))
             st.caption(
-                f"{insights.inr(stats['month'])} of {insights.inr(budget)} used "
-                f"({budget_info['pct']:.0f}%) · {budget_info['days_left']} days left · "
-                f"{insights.inr(budget_info['per_day'])}/day keeps you inside the budget"
+                T["budget_used"].format(
+                    spent=insights.inr(stats["month"]),
+                    budget=insights.inr(budget),
+                    pct=f"{budget_info['pct']:.0f}",
+                    days=budget_info["days_left"],
+                    per_day=insights.inr(budget_info["per_day"]),
+                )
             )
             if budget_info["level"] == "over":
+                over_text = T["over_budget"].format(
+                    amount=insights.inr(abs(budget_info["remaining"]))
+                )
                 st.markdown(
-                    f'<div class="budget-badge" style="background:#FEE2E2; border-color:#EF4444; '
-                    f'color:#B91C1C;">⚠️ Over budget by '
-                    f"{insights.inr(abs(budget_info['remaining']))}. Time to slow down.</div>",
+                    f'<div class="budget-badge" style="background:#FEE2E2; '
+                    f'border-color:#EF4444; color:#B91C1C;">{over_text}</div>',
                     unsafe_allow_html=True,
                 )
             elif budget_info["level"] in ("alert", "nudge"):
                 icon = "⚠️" if budget_info["level"] == "alert" else "🔔"
+                nudge_text = T["nudge_note"].format(
+                    pct=f"{budget_info['pct']:.0f}", days=budget_info["days_left"]
+                )
                 st.markdown(
-                    f'<div class="budget-badge">{icon} You have used '
-                    f"{budget_info['pct']:.0f}% of your monthly budget with "
-                    f"{budget_info['days_left']} days still to go.</div>",
+                    f'<div class="budget-badge">{icon} {nudge_text}</div>',
                     unsafe_allow_html=True,
                 )
             else:
-                st.caption(f"💚 You are on track — {insights.inr(budget_info['remaining'])} spare this month.")
+                st.caption(
+                    T["on_track"].format(amount=insights.inr(budget_info["remaining"]))
+                )
 
         pace = insights.forecast(expenses_df, budget, today)
         if pace["spent"] > 0:
@@ -821,20 +875,20 @@ with tabs[3]:
                 f"({insights.inr(stats['prev_month'])} then vs {insights.inr(stats['month'])} now)."
             )
 
-        st.markdown("##### 📈 Last 14 days")
+        st.markdown(f"##### 📈 {T['last_14']}")
         st.line_chart(insights.daily_totals(expenses_df, 14, today), color="#0F766E", height=200)
 
         cat_totals = insights.category_totals(expenses_df, today)
         if not cat_totals.empty:
-            st.markdown("##### 🏷️ Spending by category (this month)")
+            st.markdown(f"##### 🏷️ {T['by_category']}")
             st.bar_chart(cat_totals, color="#0F766E", height=220)
 
         col_a, col_b = st.columns(2)
         with col_a:
-            st.markdown("##### 💸 Top items this month")
+            st.markdown(f"##### 💸 {T['top_items']}")
             best = insights.top_items(expenses_df, 5, today)
             if best.empty:
-                st.caption("No items yet this month.")
+                st.caption(T["no_items"])
             else:
                 st.dataframe(
                     best.assign(amount=best["amount"].map(insights.inr)).rename(
@@ -844,11 +898,11 @@ with tabs[3]:
                     use_container_width=True,
                 )
         with col_b:
-            st.markdown("##### 🗓️ Patterns")
+            st.markdown(f"##### 🗓️ {T['patterns']}")
             pattern = insights.weekday_insight(expenses_df, today)
             st.write(pattern or "Log a few more days to reveal your weekly pattern.")
             streak = insights.logging_streak(expenses_df, today)
-            st.metric("Logging streak", f"{streak} day{'s' if streak != 1 else ''}")
+            st.metric(T["streak"], f"{streak} day{'s' if streak != 1 else ''}")
 
 # ---------------- TAB 5: HISTORY ----------------
 with tabs[4]:
@@ -861,22 +915,22 @@ with tabs[4]:
         working["date"] = pd.to_datetime(working["date"])
         months = sorted(working["date"].dt.strftime("%Y-%m"), reverse=True)
         f1, f2, f3 = st.columns([1, 1, 1])
-        month_pick = f1.selectbox("Month", ["All"] + months)
-        category_pick = f2.multiselect("Category", CATEGORY_CHOICES)
-        search = f3.text_input("Search item", placeholder="chai")
+        month_pick = f1.selectbox(T["month_filter"], [T["all_option"]] + months)
+        category_pick = f2.multiselect(T["category"], CATEGORY_CHOICES)
+        search = f3.text_input(T["search_item"], placeholder="chai")
 
         view = working
-        if month_pick != "All":
+        if month_pick != T["all_option"]:
             view = view[view["date"].dt.strftime("%Y-%m") == month_pick]
         if category_pick:
             view = view[view["category"].isin(category_pick)]
         if search.strip():
             view = view[view["item"].str.contains(search.strip(), case=False, regex=False)]
 
-        st.caption(f"{len(view)} entries · {insights.inr(view['amount'].sum())}")
+        st.caption(f"{len(view)} {T['entries']} · {insights.inr(view['amount'].sum())}")
 
         if view.empty:
-            st.info("No entries match these filters.")
+            st.info(T["no_match"])
         else:
             editable = view[
                 ["id", "date", "item", "amount", "category", "merchant", "payment_mode", "source"]
@@ -893,8 +947,12 @@ with tabs[4]:
                     "select": st.column_config.CheckboxColumn("✓", width="small"),
                     "id": st.column_config.NumberColumn("ID", width="small", disabled=True),
                     "date": st.column_config.DateColumn("Date", format="DD-MM-YYYY"),
-                    "amount": st.column_config.NumberColumn("Amount", format="₹%.0f", min_value=0.0),
-                    "category": st.column_config.SelectboxColumn("Category", options=CATEGORY_CHOICES),
+                    "amount": st.column_config.NumberColumn(
+                        T["amount"], format="₹%.2f", min_value=0.0
+                    ),
+                    "category": st.column_config.SelectboxColumn(
+                        T["category"], options=CATEGORY_CHOICES
+                    ),
                     "merchant": st.column_config.TextColumn(
                         T["merchant_label"], disabled=True, width="small"
                     ),
@@ -908,7 +966,7 @@ with tabs[4]:
 
             selected_rows = [int(i) for i in edited.loc[edited["select"] == True, "id"]]
             c1, c2 = st.columns(2)
-            if c1.button("💾 Save edits", type="primary", use_container_width=True):
+            if c1.button(f"💾 {T['save_edits']}", type="primary", use_container_width=True):
                 changed = 0
                 for row in edited.to_dict("records"):
                     before = original.loc[row["id"]]
@@ -926,7 +984,11 @@ with tabs[4]:
                         changed += 1
                 st.toast(f"Updated {changed} entr{'y' if changed == 1 else 'ies'}", icon="💾")
                 st.rerun()
-            if c2.button("🗑️ Delete selected", disabled=not selected_rows, use_container_width=True):
+            if c2.button(
+                f"🗑️ {T['delete_selected']}",
+                disabled=not selected_rows,
+                use_container_width=True,
+            ):
                 removed = store.delete_expenses(selected_rows)
                 st.toast(f"Deleted {removed} entr{'y' if removed == 1 else 'ies'}", icon="🗑️")
                 st.rerun()
@@ -946,11 +1008,11 @@ with tabs[5]:
         if st.session_state.get("last_ask_audio") != digest:
             st.session_state["last_ask_audio"] = digest
             try:
-                with st.spinner("Prisma is interpreting your question..."):
+                with st.spinner(T["interpreting"]):
                     st.session_state["ask_question"] = transcribe(payload, "query.wav", lang_code)
             except SttError as exc:
-                st.warning("Could not interpret that question. Try typing it below.")
-                with st.expander("Technical details"):
+                st.warning(T["ask_failed"])
+                with st.expander(T["technical"]):
                     st.code(str(exc))
 
     question = st.text_input(
@@ -973,7 +1035,7 @@ with tabs[5]:
             st.rerun()
 
     if question.strip():
-        st.markdown(f"**You asked:** *\"{question.strip()}\"*")
+        st.markdown(f"**{T['you_asked']}:** *\"{question.strip()}\"*")
         answer = insights.answer_query(question, expenses_df, udhar_df, budget=budget, today=today)
         st.success(f"🤖 {answer}")
 
@@ -989,5 +1051,5 @@ if last_ids or last_udhar_ids:
             store.delete_udhar(last_udhar_ids)
         st.session_state["last_saved_ids"] = []
         st.session_state["last_saved_udhar_ids"] = []
-        st.toast("Undone", icon="↩")
+        st.toast(T["undone"], icon="↩")
         st.rerun()

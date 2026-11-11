@@ -27,13 +27,29 @@ FORECAST_WORDS = (
 )
 
 
+def _indian_group(value: float, decimals: int) -> str:
+    """Group digits the Indian way: 1,00,000 rather than 100,000."""
+    whole, _, fraction = f"{value:.{decimals}f}".partition(".")
+    if len(whole) > 3:
+        head, tail = whole[:-3], whole[-3:]
+        groups: list[str] = []
+        while len(head) > 2:
+            groups.insert(0, head[-2:])
+            head = head[:-2]
+        if head:
+            groups.insert(0, head)
+        whole = ",".join(groups + [tail])
+    return f"{whole}.{fraction}" if fraction else whole
+
+
 def inr(amount: float) -> str:
-    """Format a rupee amount, keeping paise only when they are actually there."""
-    value = abs(float(amount or 0))
-    sign = "-" if float(amount or 0) < 0 else ""
+    """Format a rupee amount in Indian grouping, with paise only when present."""
+    raw = float(amount or 0)
+    sign = "-" if raw < 0 else ""
+    value = abs(raw)
     if abs(value - round(value)) < 0.005:
-        return f"{sign}₹{value:,.0f}"
-    return f"{sign}₹{value:,.2f}"
+        return f"{sign}₹{_indian_group(value, 0)}"
+    return f"{sign}₹{_indian_group(value, 2)}"
 
 
 def _prep(frame: pd.DataFrame | None) -> pd.DataFrame:
