@@ -30,6 +30,7 @@ LANGUAGES = {
     "বাংলা": "bn-IN",
     "தமிழ்": "ta-IN",
     "ಕನ್ನಡ": "kn-IN",
+    "മലയാളം": "ml-IN",
     "English": "en-IN",
 }
 

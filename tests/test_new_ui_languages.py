@@ -7,7 +7,7 @@ import pytest
 from awaaz import config, insights
 from awaaz.parser import parse_expenses
 
-NEW_LANGS = ("bn-IN", "ta-IN", "kn-IN")
+NEW_LANGS = ("bn-IN", "ta-IN", "kn-IN", "ml-IN")
 
 
 def _ui():
