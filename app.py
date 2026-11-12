@@ -964,7 +964,8 @@ with tabs[3]:
         st.info(T["empty_msg"])
     else:
         st.markdown(
-            f'<div class="insight-card">{insights.weekly_insight(expenses_df, today, lang_code)}</div>',
+            f'<div class="insight-card">'
+            f'{insights.weekly_insight(expenses_df, today, lang_code, CAT)}</div>',
             unsafe_allow_html=True,
         )
 
@@ -1050,10 +1051,12 @@ with tabs[3]:
         cat_totals = insights.category_totals(expenses_df, today)
         if not cat_totals.empty:
             st.markdown(f"##### 🏷️ {T['by_category']}")
+            # Horizontal bars keep long Telugu/Hindi category names readable.
             st.bar_chart(
                 cat_totals.rename(index=lambda c: CAT.get(c, c)),
                 color="#0F766E",
-                height=220,
+                height=240,
+                horizontal=True,
             )
 
         col_a, col_b = st.columns(2)
@@ -1217,7 +1220,8 @@ with tabs[5]:
     if question.strip():
         st.markdown(f"**{T['you_asked']}:** *\"{question.strip()}\"*")
         answer = insights.answer_query(
-            question, expenses_df, udhar_df, budget=budget, today=today, lang=lang_code
+            question, expenses_df, udhar_df, budget=budget,
+            today=today, lang=lang_code, cat_labels=CAT,
         )
         st.success(f"🤖 {answer}")
 

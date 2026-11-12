@@ -399,7 +399,10 @@ def weekday_insight(
 
 
 def weekly_insight(
-    expenses: pd.DataFrame, today: dt.date | None = None, lang: str = "en-IN"
+    expenses: pd.DataFrame,
+    today: dt.date | None = None,
+    lang: str = "en-IN",
+    cat_labels: dict[str, str] | None = None,
 ) -> str:
     """A single human sentence about the last seven days."""
     today = today or dt.date.today()
@@ -426,8 +429,9 @@ def weekly_insight(
 
     streak = _logging_streak(frame, today)
     streak_note = tr["weekly_streak"].format(days=streak) if streak >= 2 else ""
+    top_label = (cat_labels or {}).get(top_category, top_category)
     return tr["weekly"].format(
-        total=inr(total), top=top_category, amount=inr(top_amount),
+        total=inr(total), top=top_label, amount=inr(top_amount),
         item=item_note, streak=streak_note,
     )
 
@@ -525,6 +529,7 @@ def answer_query(
     budget: float = 0.0,
     today: dt.date | None = None,
     lang: str = "en-IN",
+    cat_labels: dict[str, str] | None = None,
 ) -> str:
     """Answer a spoken-style question about spending, offline, in the chosen language."""
     today = today or dt.date.today()
@@ -619,19 +624,22 @@ def answer_query(
 
     # 5. Category or item question inside the period
     topic = _topic(q)
+    labels = cat_labels or {}
     if topic:
         matched = scope[scope["category"] == topic]
         if matched.empty:
-            return tr["topic_none"].format(topic=topic, label=label)
+            return tr["topic_none"].format(topic=labels.get(topic, topic), label=label)
         share = matched["amount"].sum() / scope_total * 100 if scope_total else 0
         return tr["topic"].format(
-            topic=topic, amount=inr(matched["amount"].sum()), label=label,
-            count=len(matched), share=f"{share:.0f}",
+            topic=labels.get(topic, topic), amount=inr(matched["amount"].sum()),
+            label=label, count=len(matched), share=f"{share:.0f}",
         )
 
     if label == tr["scope_overall"] and _has(q, TOP_WORDS) and not frame.empty:
         by_category = frame.groupby("category")["amount"].sum().sort_values(ascending=False)
-        top_three = ", ".join(f"{cat} {inr(amt)}" for cat, amt in by_category.head(3).items())
+        top_three = ", ".join(
+            f"{labels.get(cat, cat)} {inr(amt)}" for cat, amt in by_category.head(3).items()
+        )
         return tr["top_overall"].format(cats=top_three)
 
     item_rows = _item_match(scope, q)
@@ -646,5 +654,5 @@ def answer_query(
     top_category = by_category.index[0]
     return tr["period"].format(
         total=inr(scope_total), label=label, count=len(scope),
-        top=top_category, amount=inr(by_category.iloc[0]),
+        top=labels.get(top_category, top_category), amount=inr(by_category.iloc[0]),
     )
