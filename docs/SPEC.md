@@ -370,6 +370,7 @@ flowchart TD
 |------------|---------|-------|
 | Spending forecast | Implemented | Pace-based month-end projection and the day the budget is crossed |
 | Anomaly detection | Implemented | Flags an expense at 3x the category median, once a category has 3+ entries |
+| Automatic spoken-language detection | Implemented | Prisma v3.0 `indic-auto`; the app shows the language it heard, and the picked UI language is only a fallback when the toggle is off |
 | Smart notification prompt | Partly implemented | Paste a bank/UPI SMS and it becomes a confirmable entry; reading notifications needs a native app |
 | Habit Shortcuts | Not yet | Needs a user-editable phrase table; the one-tap chips are the current stand-in |
 | Ambient Mode | Not yet | Needs a session mode that saves without confirmation, plus a nightly review screen |

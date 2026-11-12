@@ -2,7 +2,18 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from . import config
+
+#: Send this instead of a language to let Prisma v3.0 identify the language itself.
+AUTO_LANGUAGE = "indic-auto"
+
+#: Only Prisma v3.0 can auto-detect, so it is requested just for that case.
+AUTO_MODEL = "prisma-v3.0"
+
+#: Values that mean "work the language out yourself".
+_AUTO_HINTS = {"", "auto", "indic-auto", "detect", "unknown"}
 
 #: Container formats Gnani Prisma accepts (it rejects anything else with a 400).
 SUPPORTED_EXTENSIONS = ("wav", "mp3", "m4a", "ogg", "flac", "aac")
@@ -43,6 +54,35 @@ _MIME_TYPES = {
 
 class SttError(RuntimeError):
     """Raised when transcription fails or is not configured."""
+
+
+@dataclass(frozen=True)
+class Transcript:
+    """A transcript plus the language Prisma heard, when it was asked to detect."""
+
+    text: str
+    language: str | None = None
+
+
+def is_auto(language_code: str | None) -> bool:
+    """True when the caller wants the language detected from the audio."""
+    return (language_code or "").strip().lower() in _AUTO_HINTS
+
+
+def request_fields(language_code: str | None) -> dict[str, str]:
+    """Form fields for one transcription request."""
+    if is_auto(language_code):
+        return {
+            "language_code": AUTO_LANGUAGE,
+            "model": AUTO_MODEL,
+            "format": "transcribe",
+            "itn_native_numerals": "false",
+        }
+    return {
+        "language_code": str(language_code).strip(),
+        "format": "transcribe",
+        "itn_native_numerals": "false",
+    }
 
 
 def _sniff_extension(audio_bytes: bytes) -> str:
@@ -104,8 +144,19 @@ def audio_filename(label: str, audio_bytes: bytes) -> str:
     return f"clip.{extension}"
 
 
-def transcribe(audio_bytes: bytes, filename: str, language_code: str) -> str:
-    """Transcribe an audio clip with Gnani Prisma (ITN keeps numerals as digits)."""
+def transcribe(audio_bytes: bytes, filename: str, language_code: str = "") -> str:
+    """Transcribe an audio clip and return just the text."""
+    return transcribe_detailed(audio_bytes, filename, language_code).text
+
+
+def transcribe_detailed(
+    audio_bytes: bytes, filename: str, language_code: str = ""
+) -> Transcript:
+    """Transcribe an audio clip, keeping the language Prisma detected for us.
+
+    Passing an empty/auto language sends ``indic-auto`` to Prisma v3.0, which
+    works out the spoken language and reports it in ``detected_language_code``.
+    """
     key = config.api_key()
     if not key:
         raise SttError("GNANI_API_KEY is not configured.")
@@ -122,11 +173,7 @@ def transcribe(audio_bytes: bytes, filename: str, language_code: str) -> str:
             config.GNANI_API_URL,
             headers={"X-API-Key-ID": key},
             files={"audio_file": (audio_filename(filename, audio_bytes), audio_bytes)},
-            data={
-                "language_code": language_code,
-                "format": "transcribe",
-                "itn_native_numerals": "false",
-            },
+            data=request_fields(language_code),
             timeout=60,
         )
     except Exception as exc:  # network problems should not crash the page
@@ -143,4 +190,5 @@ def transcribe(audio_bytes: bytes, filename: str, language_code: str) -> str:
     transcript = (payload.get("transcript") or "").strip()
     if not transcript:
         raise SttError("Gnani could not find speech in that clip.")
-    return transcript
+    detected = (payload.get("detected_language_code") or "").strip() or None
+    return Transcript(text=transcript, language=detected)

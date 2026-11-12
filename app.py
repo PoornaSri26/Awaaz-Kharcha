@@ -15,7 +15,7 @@ import streamlit as st
 from awaaz import config, insights
 from awaaz.parser import CAT_EMOJI, EXPENSE_CATEGORIES, parse_bank_sms, parse_expenses
 from awaaz.store import Store
-from awaaz.stt import SttError, transcribe
+from awaaz.stt import SttError, transcribe_detailed
 
 DATA_FILE = "data/awaaz.db"  # shown in the sidebar for transparency
 
@@ -233,6 +233,9 @@ EXTRA = {
         "lbl_type": "खर्च टाइप करें", "lbl_sms": "बैंक SMS",
         "lbl_record": "अपने खर्च बोलिए", "lbl_ask_mic": "सवाल पूछिए",
         "lbl_ask": "अपने पैसों के बारे में पूछिए", "chart_amount": "रकम (₹)",
+        "auto_detect": "🎧 बोली हुई भाषा अपने आप पहचानें",
+        "auto_detect_hint": "Prisma खुद समझ लेगा कि आपने हिंदी, तेलुगु या अंग्रेज़ी बोली — चुनने की ज़रूरत नहीं।",
+        "heard_lang": "🗣️ सुनी गई भाषा: {lang}",
     },
     "te-IN": {
         "settings": "సెట్టింగ్‌లు", "export": "ఎక్స్‌పోర్ట్", "expenses_csv": "ఖర్చుల CSV",
@@ -319,6 +322,9 @@ EXTRA = {
         "lbl_type": "ఖర్చు టైప్ చేయండి", "lbl_sms": "బ్యాంక్ SMS",
         "lbl_record": "మీ ఖర్చులు చెప్పండి", "lbl_ask_mic": "ప్రశ్న అడగండి",
         "lbl_ask": "మీ డబ్బు గురించి అడగండి", "chart_amount": "మొత్తం (₹)",
+        "auto_detect": "🎧 మాట్లాడిన భాషను ఆటోమేటిక్‌గా గుర్తించండి",
+        "auto_detect_hint": "మీరు హిందీ, తెలుగు లేదా ఇంగ్లీష్ మాట్లాడారో Prisma తనే గుర్తిస్తుంది — ఎంచుకోవాల్సిన అవసరం లేదు.",
+        "heard_lang": "🗣️ విన్న భాష: {lang}",
     },
     "en-IN": {
         "settings": "Settings", "export": "Export", "expenses_csv": "Expenses CSV",
@@ -405,6 +411,9 @@ EXTRA = {
         "lbl_type": "Type expenses", "lbl_sms": "Bank SMS",
         "lbl_record": "Record your expenses", "lbl_ask_mic": "Ask a question",
         "lbl_ask": "Ask about your money", "chart_amount": "Amount (₹)",
+        "auto_detect": "🎧 Auto-detect the spoken language",
+        "auto_detect_hint": "Prisma works out whether you spoke Hindi, Telugu or English — no need to pick one.",
+        "heard_lang": "🗣️ Heard {lang}",
     },
 }
 
@@ -615,6 +624,11 @@ else:
 if not voice_ready:
     st.info(T["no_voice"])
 
+auto_speech = st.checkbox(
+    T["auto_detect"], value=True, key="auto_speech",
+    help=T["auto_detect_hint"],
+)
+
 
 def save_rows(rows: list[dict], udhar_rows: list[dict], source: str) -> None:
     """Persist parsed rows and remember the ids so the user can undo."""
@@ -729,8 +743,11 @@ with tabs[0]:
             try:
                 with st.spinner(T["listening"]):
                     label = getattr(active_audio, "name", "") or getattr(active_audio, "type", "")
-                    heard = transcribe(payload, label, lang_code)
-                st.session_state["voice_text"] = heard
+                    result = transcribe_detailed(
+                        payload, label, "" if auto_speech else lang_code
+                    )
+                st.session_state["voice_text"] = result.text
+                st.session_state["voice_lang"] = result.language
                 st.session_state["last_audio"] = digest
             except SttError as exc:
                 st.session_state["last_audio"] = digest
@@ -740,6 +757,13 @@ with tabs[0]:
                     st.code(str(exc))
 
     if st.session_state.get("voice_text"):
+        heard_lang = st.session_state.get("voice_lang")
+        if heard_lang:
+            st.caption(
+                T["heard_lang"].format(
+                    lang=config.LANGUAGE_NAMES.get(heard_lang, heard_lang)
+                )
+            )
         review_block("voice_text", "voice")
     else:
         st.caption(f"💡 {T['example']}")
@@ -1197,7 +1221,11 @@ with tabs[5]:
             st.session_state["last_ask_audio"] = digest
             try:
                 with st.spinner(T["interpreting"]):
-                    st.session_state["ask_question"] = transcribe(payload, "query.wav", lang_code)
+                    result = transcribe_detailed(
+                        payload, "query.wav", "" if auto_speech else lang_code
+                    )
+                    st.session_state["ask_question"] = result.text
+                st.session_state["ask_lang"] = result.language
             except SttError as exc:
                 st.warning(T["ask_failed"])
                 with st.expander(T["technical"]):

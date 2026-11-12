@@ -32,6 +32,20 @@ LANGUAGES = {
 
 DEFAULT_LANGUAGE = "Hinglish"
 
+#: Human names for the codes Prisma can report back when it detects the language.
+LANGUAGE_NAMES = {
+    "hi-IN": "हिन्दी / Hinglish",
+    "te-IN": "తెలుగు / Telugu",
+    "en-IN": "English",
+    "bn-IN": "বাংলা / Bengali",
+    "ta-IN": "தமிழ் / Tamil",
+    "kn-IN": "ಕನ್ನಡ / Kannada",
+    "ml-IN": "മലയാളം / Malayalam",
+    "mr-IN": "मराठी / Marathi",
+    "gu-IN": "ગુજરાતી / Gujarati",
+    "pa-IN": "ਪੰਜਾਬੀ / Punjabi",
+}
+
 #: Budget nudge thresholds (percent of the monthly budget already spent)
 NUDGE_PCT = 80
 ALERT_PCT = 90
