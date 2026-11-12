@@ -127,6 +127,25 @@ UI = {
 
 CATEGORY_CHOICES = EXPENSE_CATEGORIES
 
+#: Display names for categories; the canonical English key is what gets stored.
+CAT_LABELS = {
+    "en-IN": {
+        "Food": "Food", "Travel": "Travel", "Groceries": "Groceries", "Bills": "Bills",
+        "Health": "Health", "Shopping": "Shopping", "Fun": "Fun",
+        "Education": "Education", "Other": "Other",
+    },
+    "hi-IN": {
+        "Food": "भोजन", "Travel": "सफ़र", "Groceries": "राशन", "Bills": "बिल",
+        "Health": "सेहत", "Shopping": "खरीदारी", "Fun": "मज़ा",
+        "Education": "पढ़ाई", "Other": "अन्य",
+    },
+    "te-IN": {
+        "Food": "ఆహారం", "Travel": "ప్రయాణం", "Groceries": "సరుకులు", "Bills": "బిల్లులు",
+        "Health": "ఆరోగ్యం", "Shopping": "షాపింగ్", "Fun": "వినోదం",
+        "Education": "చదువు", "Other": "ఇతర",
+    },
+}
+
 #: Chrome that used to be English-only, now translated for every language.
 EXTRA = {
     "hi-IN": {
@@ -181,6 +200,39 @@ EXTRA = {
         "over_budget": "⚠️ बजट से {amount} ज़्यादा। अब थोड़ा रुकिए।",
         "nudge_note": "{pct}% बजट इस्तेमाल हो गया, अभी {days} दिन बाकी हैं।",
         "on_track": "💚 आप ट्रैक पर हैं — इस महीने {amount} बचेंगे।",
+        "tagline": "जो खर्च किया, बस बोलिए। Gnani Prisma से लिखा जाता है।",
+        "help": "मदद",
+        "help_body": """**आप क्या बोल सकते हैं**
+- `aaj chai 20, auto 80, lunch dedh sau` — एक सांस में कई खर्च
+- `kal metro 40` — *kal* / *parso* / *yesterday* से पिछली तारीख
+- `Ravi ko 500 udhar diya` — खाता एंट्री, बाद में सेटल कीजिए
+- `is mahine kitna kharch hua?` — आवाज़ से पूछिए
+- `dedh sau` (150), `dhai hazar` (2500), `paanch sau` (500) सब चलते हैं
+
+**सुझाव**
+- Prisma गलत सुने तो सेव करने से पहले ट्रांसक्रिप्ट सुधार लीजिए।
+- सारा डेटा इस डिवाइस के SQLite में रहता है; साइडबार से कभी भी एक्सपोर्ट कीजिए।""",
+        "db_counts": "📦 {expenses} खर्च · 📒 {khata} खाता एंट्री",
+        "avg_help": "इस महीने बीते हर दिन का औसत खर्च",
+        "chips": ["🍵 चाय", "🛺 ऑटो", "🍱 लंच", "💡 रिचार्ज", "📚 ज़ेरॉक्स", "🥬 सब्ज़ी"],
+        "added": "{item} जोड़ा गया",
+        "item_placeholder": "चाय, ऑटो, दवाई...",
+        "lent_option": "उधार दिया", "borrowed_option": "उधार लिया",
+        "status_label": "स्थिति",
+        "col_item": "चीज़", "col_total": "कुल", "col_times": "बार", "col_usual": "सामान्य",
+        "streak_day": "{days} दिन", "streak_days": "{days} दिन",
+        "delta_more": "📈 पिछले महीने से {pct}% ज़्यादा (तब {then}, अब {now})।",
+        "delta_less": "📉 पिछले महीने से {pct}% कम (तब {then}, अब {now})।",
+        "pattern_empty": "कुछ और दिन दर्ज कीजिए, फिर साप्ताहिक पैटर्न दिखेगा।",
+        "updated_entries": "{n} एंट्री अपडेट हुईं", "deleted_entries": "{n} एंट्री हटाई गईं",
+        "ask_samples": [
+            "इस महीने कितना खर्च हुआ?", "चाय पर कितना गया?",
+            "बजट कितना बचा?", "सबसे महंगा खर्च?",
+        ],
+        "lbl_transcript": "ट्रांसक्रिप्ट", "lbl_upload": "ऑडियो अपलोड",
+        "lbl_type": "खर्च टाइप करें", "lbl_sms": "बैंक SMS",
+        "lbl_record": "अपने खर्च बोलिए", "lbl_ask_mic": "सवाल पूछिए",
+        "lbl_ask": "अपने पैसों के बारे में पूछिए", "chart_amount": "रकम (₹)",
     },
     "te-IN": {
         "settings": "సెట్టింగ్‌లు", "export": "ఎక్స్‌పోర్ట్", "expenses_csv": "ఖర్చుల CSV",
@@ -234,6 +286,39 @@ EXTRA = {
         "over_budget": "⚠️ బడ్జెట్ కంటే {amount} ఎక్కువ. కొంచెం ఆగండి.",
         "nudge_note": "బడ్జెట్‌లో {pct}% వాడారు, ఇంకా {days} రోజులు ఉన్నాయి.",
         "on_track": "💚 మీరు సరైన దారిలో ఉన్నారు — ఈ నెల {amount} మిగులుతుంది.",
+        "tagline": "ఖర్చు ఏమిటో చెప్పండి. మేము రాస్తాము. Gnani Prisma తో.",
+        "help": "సహాయం",
+        "help_body": """**మీరు ఏమి చెప్పవచ్చు**
+- `aaj chai 20, auto 80, lunch dedh sau` — ఒకే ఊపిరిలో చాలా ఖర్చులు
+- `kal metro 40` — *kal* / *parso* / *yesterday* తో గత తారీఖు
+- `Ravi ko 500 udhar diya` — ఖాతా ఎంట్రీ, తరువాత సెటిల్ చేయండి
+- `is mahine kitna kharch hua?` — స్వరంతో అడగండి
+- `dedh sau` (150), `dhai hazar` (2500), `paanch sau` (500) అన్నీ పని చేస్తాయి
+
+**చిట్కాలు**
+- Prisma తప్పుగా విన్నట్టయితే సేవ్ చేయడానికి ముందు ట్రాన్స్‌క్రిప్ట్ సవరించండి.
+- డేటా మొత్తం ఈ పరికరంలోని SQLiteలో ఉంటుంది; సైడ్‌బార్ నుండి ఎప్పుడైనా ఎక్స్‌పోర్ట్ చేయండి.""",
+        "db_counts": "📦 {expenses} ఖర్చులు · 📒 {khata} ఖాతా ఎంట్రీలు",
+        "avg_help": "ఈ నెల గడిచిన రోజుల సగటు ఖర్చు",
+        "chips": ["🍵 టీ", "🛺 ఆటో", "🍱 లంచ్", "💡 రీఛార్జ్", "📚 జెరాక్స్", "🥬 కూరగాయలు"],
+        "added": "{item} జోడించబడింది",
+        "item_placeholder": "టీ, ఆటో, మందులు...",
+        "lent_option": "అప్పు ఇచ్చాను", "borrowed_option": "అప్పు తీసుకున్నాను",
+        "status_label": "స్థితి",
+        "col_item": "వస్తువు", "col_total": "మొత్తం", "col_times": "సార్లు", "col_usual": "సాధారణం",
+        "streak_day": "{days} రోజు", "streak_days": "{days} రోజులు",
+        "delta_more": "📈 గత నెల కంటే {pct}% ఎక్కువ (అప్పుడు {then}, ఇప్పుడు {now}).",
+        "delta_less": "📉 గత నెల కంటే {pct}% తక్కువ (అప్పుడు {then}, ఇప్పుడు {now}).",
+        "pattern_empty": "ఇంకా కొన్ని రోజులు నమోదు చేయండి, వారపు నమూనా కనిపిస్తుంది.",
+        "updated_entries": "{n} ఎంట్రీలు అప్‌డేట్ అయ్యాయి", "deleted_entries": "{n} ఎంట్రీలు తొలగించబడ్డాయి",
+        "ask_samples": [
+            "ఈ నెల ఎంత ఖర్చు అయింది?", "టీ కి ఎంత పోయింది?",
+            "బడ్జెట్ ఎంత మిగిలింది?", "అత్యధిక ఖర్చు ఏమిటి?",
+        ],
+        "lbl_transcript": "ట్రాన్స్‌క్రిప్ట్", "lbl_upload": "ఆడియో అప్‌లోడ్",
+        "lbl_type": "ఖర్చు టైప్ చేయండి", "lbl_sms": "బ్యాంక్ SMS",
+        "lbl_record": "మీ ఖర్చులు చెప్పండి", "lbl_ask_mic": "ప్రశ్న అడగండి",
+        "lbl_ask": "మీ డబ్బు గురించి అడగండి", "chart_amount": "మొత్తం (₹)",
     },
     "en-IN": {
         "settings": "Settings", "export": "Export", "expenses_csv": "Expenses CSV",
@@ -287,8 +372,51 @@ EXTRA = {
         "over_budget": "⚠️ Over budget by {amount}. Time to slow down.",
         "nudge_note": "You have used {pct}% of your monthly budget with {days} days still to go.",
         "on_track": "💚 You are on track — {amount} spare this month.",
+        "tagline": "Say what you spent. We write it down. Powered by Gnani Prisma.",
+        "help": "Help",
+        "help_body": """**What you can say**
+- `aaj chai 20, auto 80, lunch dedh sau` — one breath, many expenses
+- `kal metro 40` — backdate with *kal* / *parso* / *yesterday*
+- `Ravi ko 500 udhar diya` — khata entry, settle it later
+- `is mahine kitna kharch hua?` — ask by voice
+- `dedh sau` (150), `dhai hazar` (2500), `paanch sau` (500) all work
+
+**Tips**
+- Edit the transcript before saving if Prisma mishears a number.
+- Everything is stored locally in SQLite; export any time from the sidebar.""",
+        "db_counts": "📦 {expenses} expenses · 📒 {khata} khata entries",
+        "avg_help": "Average spend per elapsed day this month",
+        "chips": ["🍵 Chai", "🛺 Auto", "🍱 Lunch", "💡 Recharge", "📚 Xerox", "🥬 Sabzi"],
+        "added": "{item} added",
+        "item_placeholder": "Chai, auto, medicine...",
+        "lent_option": "Lent (gave)", "borrowed_option": "Borrowed (took)",
+        "status_label": "Status",
+        "col_item": "Item", "col_total": "Total", "col_times": "Times", "col_usual": "Usual",
+        "streak_day": "{days} day", "streak_days": "{days} days",
+        "delta_more": "📈 {pct}% more than last month ({then} then vs {now} now).",
+        "delta_less": "📉 {pct}% less than last month ({then} then vs {now} now).",
+        "pattern_empty": "Log a few more days to reveal your weekly pattern.",
+        "updated_entries": "Updated {n} entries", "deleted_entries": "Deleted {n} entries",
+        "ask_samples": [
+            "is mahine kitna kharch hua?", "chai pe kitna gaya?",
+            "budget kitna bacha?", "sabse mehnga kharch?",
+        ],
+        "lbl_transcript": "Transcript", "lbl_upload": "Upload audio",
+        "lbl_type": "Type expenses", "lbl_sms": "Bank SMS",
+        "lbl_record": "Record your expenses", "lbl_ask_mic": "Ask a question",
+        "lbl_ask": "Ask about your money", "chart_amount": "Amount (₹)",
     },
 }
+
+#: Canonical item behind each one-tap chip; the visible label is translated.
+CHIP_ITEMS = [
+    (20.0, "Food", "Chai"),
+    (80.0, "Travel", "Auto"),
+    (150.0, "Food", "Lunch"),
+    (299.0, "Bills", "Recharge"),
+    (30.0, "Education", "Xerox"),
+    (60.0, "Groceries", "Sabzi"),
+]
 
 QUICK_CHIPS = [
     ("🍵 Chai", 20.0, "Food"),
@@ -346,40 +474,29 @@ def get_store() -> Store:
 
 store = get_store()
 
-# ---------------- HEADER ----------------
-col_h1, col_h2 = st.columns([4, 1])
-with col_h1:
-    st.markdown(
-        "<h2 style='margin:0; font-weight:800; color:#0F766E;'>🎙️ Awaaz Kharcha</h2>",
-        unsafe_allow_html=True,
-    )
-    st.caption("Say what you spent. We write it down. Powered by Gnani Prisma.")
-with col_h2:
-    with st.popover("ℹ️ Help"):
-        st.markdown(
-            """
-            **What you can say**
-            - `aaj chai 20, auto 80, lunch dedh sau` — one breath, many expenses
-            - `kal metro 40` — backdate with *kal* / *parso* / *yesterday*
-            - `Ravi ko 500 udhar diya` — khata entry, settle it later
-            - `is mahine kitna kharch hua?` — ask by voice
-            - `dedh sau` (150), `dhai hazar` (2500), `paanch sau` (500) all work
-
-            **Tips**
-            - Edit the transcript before saving if Prisma mishears a number.
-            - Everything is stored locally in SQLite; export any time from the sidebar.
-            """
-        )
-
+# ---------------- LANGUAGE + HEADER ----------------
 lang_choice = st.segmented_control(
-    "Language",
+    "Language / भाषा / భాష",
     options=list(config.LANGUAGES.keys()),
     default=config.DEFAULT_LANGUAGE,
     label_visibility="collapsed",
 ) or config.DEFAULT_LANGUAGE
 lang_code = config.LANGUAGES.get(lang_choice, "hi-IN")
 T = {**UI[lang_code], **EXTRA.get(lang_code, {})}
+CAT = CAT_LABELS.get(lang_code, CAT_LABELS["en-IN"])
 voice_ready = config.api_key_configured()
+
+col_h1, col_h2 = st.columns([4, 1])
+with col_h1:
+    st.markdown(
+        f"<h2 style='margin:0; font-weight:800; color:#0F766E;'>🎙️ {T['title']}</h2>",
+        unsafe_allow_html=True,
+    )
+    st.caption(T["tagline"])
+with col_h2:
+    with st.popover(f"ℹ️ {T['help']}"):
+        st.markdown(T["help_body"])
+
 
 expenses_df = store.expenses()
 udhar_df = store.udhar()
@@ -402,7 +519,7 @@ with st.sidebar:
 
     stats = insights.summary(expenses_df)
     if stats["count"]:
-        st.caption(f"📦 {stats['count']} expenses · 📒 {len(udhar_df)} khata entries")
+        st.caption(T["db_counts"].format(expenses=stats["count"], khata=len(udhar_df)))
 
     st.divider()
     st.markdown(f"### 📤 {T['export']}")
@@ -488,7 +605,7 @@ m1.metric(T["week"], insights.inr(stats["week"]))
 m2.metric(
     T["avg_day"],
     insights.inr(stats["avg_per_day"]),
-    help="Average spend per elapsed day this month",
+    help=T["avg_help"],
 )
 if budget > 0:
     m3.metric(T["safe_today"], insights.inr(budget_info["per_day"]))
@@ -517,12 +634,16 @@ def render_parsed(rows: list[dict], udhar_rows: list[dict]) -> None:
         st.markdown(f"##### 🛒 {T['personal_expenses']}")
         preview = pd.DataFrame(rows)
         preview["amount"] = preview["amount"].map(insights.inr)
-        preview["category"] = preview["category"].map(lambda c: f"{CAT_EMOJI.get(c, '📦')} {c}")
+        preview["category"] = preview["category"].map(lambda c: f"{CAT_EMOJI.get(c, '📦')} {CAT.get(c, c)}")
         st.dataframe(
             preview[
                 ["date", "item", "amount", "category", "merchant", "payment_mode", "kind"]
             ].rename(
                 columns={
+                    "date": T["date"],
+                    "item": T["col_item"],
+                    "amount": T["amount"],
+                    "category": T["category"],
                     "merchant": T["merchant_label"],
                     "payment_mode": T["mode_label"],
                     "kind": T["kind_label"],
@@ -535,6 +656,12 @@ def render_parsed(rows: list[dict], udhar_rows: list[dict]) -> None:
         st.markdown(f"##### 🤝 {T['khata_entries']}")
         preview = pd.DataFrame(udhar_rows)
         preview["amount"] = preview["amount"].map(insights.inr)
+        preview = preview.rename(
+            columns={
+                "date": T["date"], "person": T["person"], "amount": T["amount"],
+                "type": T["type"], "status": T["status_label"],
+            }
+        )
         st.dataframe(preview, use_container_width=True, hide_index=True)
 
 
@@ -553,7 +680,7 @@ def review_block(widget_key: str, source: str) -> None:
     if not st.session_state.get(widget_key, "").strip():
         return
     st.markdown(f"#### 📝 {T['heard']}")
-    edited = st.text_area("Transcript", height=90, key=widget_key, label_visibility="collapsed")
+    edited = st.text_area(T["lbl_transcript"], height=90, key=widget_key, label_visibility="collapsed")
     rows, udhar_rows = parse_expenses(edited, today)
 
     if not rows and not udhar_rows:
@@ -586,10 +713,10 @@ tabs = st.tabs(T["tabs"])
 # ---------------- TAB 1: VOICE ----------------
 with tabs[0]:
     st.markdown(f"#### 🎙️ {T['speak']}")
-    audio = st.audio_input("Record your expenses", key="mic", label_visibility="collapsed")
+    audio = st.audio_input(T["lbl_record"], key="mic", label_visibility="collapsed")
     with st.expander(T["whatsapp_hint"]):
         upload = st.file_uploader(
-            "Upload audio",
+            T["lbl_upload"],
             type=["ogg", "opus", "oga", "m4a", "mp3", "wav", "aac", "flac"],
             label_visibility="collapsed",
         )
@@ -622,7 +749,7 @@ with tabs[0]:
 with tabs[1]:
     st.markdown(f"#### ⌨️ {T['type_header']}")
     typed = st.text_area(
-        "Type expenses",
+        T["lbl_type"],
         placeholder=T["type_placeholder"],
         height=100,
         key="typed_text",
@@ -646,7 +773,8 @@ with tabs[1]:
     st.divider()
     st.markdown(f"##### ⚡ {T['one_tap']}")
     chip_cols = st.columns(3)
-    for index, (label, amount, category) in enumerate(QUICK_CHIPS):
+    for index, (amount, category, item) in enumerate(CHIP_ITEMS):
+        label = T["chips"][index % len(T["chips"])]
         if chip_cols[index % 3].button(
             f"{label} · {insights.inr(amount)}", key=f"chip_{index}", use_container_width=True
         ):
@@ -654,7 +782,7 @@ with tabs[1]:
                 [
                     {
                         "date": today.isoformat(),
-                        "item": label.split(" ", 1)[1],
+                        "item": item,
                         "amount": amount,
                         "category": category,
                     }
@@ -662,14 +790,14 @@ with tabs[1]:
                 source="quick",
             )
             st.session_state["last_saved_ids"] = ids
-            st.toast(f"{label} added", icon="⚡")
+            st.toast(T["added"].format(item=label), icon="⚡")
             st.rerun()
 
     st.divider()
     with st.expander(f"➕ {T['manual_header']}"):
         with st.form("manual_entry", clear_on_submit=True):
             c1, c2 = st.columns([2, 1])
-            item = c1.text_input(T["what"], placeholder="Chai, auto, medicine...")
+            item = c1.text_input(T["what"], placeholder=T["item_placeholder"])
             amount = c2.number_input(T["amount"], min_value=0.0, step=10.0, format="%.2f")
             c3, c4 = st.columns([1, 1])
             category = c3.selectbox(
@@ -701,7 +829,7 @@ with tabs[1]:
     with st.expander(f"📩 {T['sms_header']}"):
         st.caption(T["sms_hint"])
         sms_text = st.text_area(
-            "SMS", key="sms_text", height=90, label_visibility="collapsed"
+            T["lbl_sms"], key="sms_text", height=90, label_visibility="collapsed"
         )
         if sms_text.strip():
             sms_row = parse_bank_sms(sms_text, today)
@@ -731,11 +859,22 @@ with tabs[2]:
         k2.metric(T["i_owe"], insights.inr(taken))
         k3.metric(T["people_pending"], int(pending["person"].nunique()))
         shown = pending.assign(amount=pending["amount"].map(insights.inr))
+        shown["type"] = shown["type"].map(
+            lambda v: T["lent_option"] if str(v).startswith("Lent") else T["borrowed_option"]
+        )
+        shown["status"] = shown["status"].map(
+            lambda v: T["settled"] if str(v) == "Settled" else T["pending"]
+        )
         columns = ["date", "person", "amount", "type", "status"]
+        labels = {
+            "date": T["date"], "person": T["person"], "amount": T["amount"],
+            "type": T["type"], "status": T["status_label"],
+        }
         if "remaining" in pending.columns:
             shown["remaining"] = pending["remaining"].map(insights.inr)
             columns = ["date", "person", "amount", "remaining", "type", "status"]
-        st.dataframe(shown[columns], use_container_width=True, hide_index=True)
+            labels["remaining"] = T["remaining"]
+        st.dataframe(shown[columns].rename(columns=labels), use_container_width=True, hide_index=True)
     else:
         st.info(T["no_pending"])
 
@@ -747,7 +886,13 @@ with tabs[2]:
                 T["amount"], min_value=0.0, step=50.0, format="%.2f"
             )
             p3, p4 = st.columns([1, 1])
-            entry_type = p3.selectbox(T["type"], ["Lent (Diya)", "Borrowed (Liya)"])
+            entry_type = p3.selectbox(
+                T["type"],
+                ["Lent (Diya)", "Borrowed (Liya)"],
+                format_func=lambda value: (
+                    T["lent_option"] if str(value).startswith("Lent") else T["borrowed_option"]
+                ),
+            )
             khata_date = p4.date_input(T["date"], value=today, key="khata_date")
             add_khata = st.form_submit_button(
                 T["add_entry"], type="primary", use_container_width=True
@@ -774,6 +919,12 @@ with tabs[2]:
     if not current_udhar.empty:
         st.markdown(f"##### {T['all_entries']}")
         ledger = current_udhar.copy()
+        ledger["type"] = ledger["type"].map(
+            lambda v: T["lent_option"] if str(v).startswith("Lent") else T["borrowed_option"]
+        )
+        ledger["status"] = ledger["status"].map(
+            lambda v: T["settled"] if str(v) == "Settled" else T["pending"]
+        )
         ledger.insert(0, "select", False)
         edited_ledger = st.data_editor(
             ledger[["select", "id", "date", "person", "amount", "type", "status"]],
@@ -783,7 +934,11 @@ with tabs[2]:
             column_config={
                 "select": st.column_config.CheckboxColumn("✓", width="small"),
                 "id": st.column_config.NumberColumn("ID", width="small"),
+                "date": st.column_config.TextColumn(T["date"]),
+                "person": st.column_config.TextColumn(T["person"]),
                 "amount": st.column_config.NumberColumn(T["amount"], format="₹%.2f"),
+                "type": st.column_config.TextColumn(T["type"]),
+                "status": st.column_config.TextColumn(T["status_label"]),
             },
             key="ledger_editor",
         )
@@ -862,6 +1017,14 @@ with tabs[3]:
                     flagged.assign(
                         amount=flagged["amount"].map(insights.inr),
                         usual=flagged["usual"].map(insights.inr),
+                    )
+                    .assign(category=flagged["category"].map(lambda c: CAT.get(c, c)))
+                    .rename(
+                        columns={
+                            "date": T["date"], "item": T["col_item"],
+                            "amount": T["amount"], "category": T["category"],
+                            "usual": T["col_usual"], "times": T["col_times"],
+                        }
                     ),
                     hide_index=True,
                     use_container_width=True,
@@ -869,19 +1032,29 @@ with tabs[3]:
 
         delta = stats["delta_pct"]
         if stats["prev_month"] > 0:
-            arrow = "📈" if delta > 0 else "📉"
+            key = "delta_more" if delta > 0 else "delta_less"
             st.caption(
-                f"{arrow} {abs(delta):.0f}% {'more' if delta > 0 else 'less'} than last month "
-                f"({insights.inr(stats['prev_month'])} then vs {insights.inr(stats['month'])} now)."
+                T[key].format(
+                    pct=f"{abs(delta):.0f}",
+                    then=insights.inr(stats["prev_month"]),
+                    now=insights.inr(stats["month"]),
+                )
             )
 
         st.markdown(f"##### 📈 {T['last_14']}")
-        st.line_chart(insights.daily_totals(expenses_df, 14, today), color="#0F766E", height=200)
+        daily = insights.daily_totals(expenses_df, 14, today).rename(
+            columns={"amount": T["chart_amount"]}
+        )
+        st.line_chart(daily, color="#0F766E", height=200)
 
         cat_totals = insights.category_totals(expenses_df, today)
         if not cat_totals.empty:
             st.markdown(f"##### 🏷️ {T['by_category']}")
-            st.bar_chart(cat_totals, color="#0F766E", height=220)
+            st.bar_chart(
+                cat_totals.rename(index=lambda c: CAT.get(c, c)),
+                color="#0F766E",
+                height=220,
+            )
 
         col_a, col_b = st.columns(2)
         with col_a:
@@ -892,7 +1065,11 @@ with tabs[3]:
             else:
                 st.dataframe(
                     best.assign(amount=best["amount"].map(insights.inr)).rename(
-                        columns={"item": "Item", "amount": "Total", "count": "Times"}
+                        columns={
+                            "item": T["col_item"],
+                            "amount": T["col_total"],
+                            "count": T["col_times"],
+                        }
                     ),
                     hide_index=True,
                     use_container_width=True,
@@ -900,9 +1077,10 @@ with tabs[3]:
         with col_b:
             st.markdown(f"##### 🗓️ {T['patterns']}")
             pattern = insights.weekday_insight(expenses_df, today, lang_code)
-            st.write(pattern or "Log a few more days to reveal your weekly pattern.")
+            st.write(pattern or T["pattern_empty"])
             streak = insights.logging_streak(expenses_df, today)
-            st.metric(T["streak"], f"{streak} day{'s' if streak != 1 else ''}")
+            streak_key = "streak_day" if streak == 1 else "streak_days"
+            st.metric(T["streak"], T[streak_key].format(days=streak))
 
 # ---------------- TAB 5: HISTORY ----------------
 with tabs[4]:
@@ -916,7 +1094,9 @@ with tabs[4]:
         months = sorted(working["date"].dt.strftime("%Y-%m"), reverse=True)
         f1, f2, f3 = st.columns([1, 1, 1])
         month_pick = f1.selectbox(T["month_filter"], [T["all_option"]] + months)
-        category_pick = f2.multiselect(T["category"], CATEGORY_CHOICES)
+        category_pick = f2.multiselect(
+            T["category"], CATEGORY_CHOICES, format_func=lambda c: CAT.get(c, c)
+        )
         search = f3.text_input(T["search_item"], placeholder="chai")
 
         view = working
@@ -936,6 +1116,9 @@ with tabs[4]:
                 ["id", "date", "item", "amount", "category", "merchant", "payment_mode", "source"]
             ].copy()
             editable["date"] = editable["date"].dt.date
+            # Show category names in the chosen language, store the canonical key.
+            cat_reverse = {label: key for key, label in CAT.items()}
+            editable["category"] = editable["category"].map(lambda c: CAT.get(c, c))
             editable.insert(0, "select", False)
             original = editable.set_index("id")
 
@@ -946,12 +1129,12 @@ with tabs[4]:
                 column_config={
                     "select": st.column_config.CheckboxColumn("✓", width="small"),
                     "id": st.column_config.NumberColumn("ID", width="small", disabled=True),
-                    "date": st.column_config.DateColumn("Date", format="DD-MM-YYYY"),
+                    "date": st.column_config.DateColumn(T["date"], format="DD-MM-YYYY"),
                     "amount": st.column_config.NumberColumn(
                         T["amount"], format="₹%.2f", min_value=0.0
                     ),
                     "category": st.column_config.SelectboxColumn(
-                        T["category"], options=CATEGORY_CHOICES
+                        T["category"], options=[CAT[c] for c in CATEGORY_CHOICES]
                     ),
                     "merchant": st.column_config.TextColumn(
                         T["merchant_label"], disabled=True, width="small"
@@ -959,7 +1142,9 @@ with tabs[4]:
                     "payment_mode": st.column_config.TextColumn(
                         T["paid_by"], disabled=True, width="small"
                     ),
-                    "source": st.column_config.TextColumn("Via", disabled=True, width="small"),
+                    "source": st.column_config.TextColumn(
+                        T["paid_by"], disabled=True, width="small"
+                    ),
                 },
                 key="history_editor",
             )
@@ -978,11 +1163,11 @@ with tabs[4]:
                     if round(float(row["amount"]), 2) != round(float(before["amount"]), 2):
                         updates["amount"] = float(row["amount"])
                     if row["category"] != before["category"]:
-                        updates["category"] = row["category"]
+                        updates["category"] = cat_reverse.get(row["category"], row["category"])
                     if updates:
                         store.update_expense(int(row["id"]), **updates)
                         changed += 1
-                st.toast(f"Updated {changed} entr{'y' if changed == 1 else 'ies'}", icon="💾")
+                st.toast(T["updated_entries"].format(n=changed), icon="💾")
                 st.rerun()
             if c2.button(
                 f"🗑️ {T['delete_selected']}",
@@ -990,7 +1175,7 @@ with tabs[4]:
                 use_container_width=True,
             ):
                 removed = store.delete_expenses(selected_rows)
-                st.toast(f"Deleted {removed} entr{'y' if removed == 1 else 'ies'}", icon="🗑️")
+                st.toast(T["deleted_entries"].format(n=removed), icon="🗑️")
                 st.rerun()
 
 # ---------------- TAB 6: ASK ----------------
@@ -1001,7 +1186,7 @@ with tabs[5]:
     if "ask_pending" in st.session_state:
         st.session_state["ask_question"] = st.session_state.pop("ask_pending")
 
-    ask_audio = st.audio_input("Ask a question", key="ask_mic", label_visibility="collapsed")
+    ask_audio = st.audio_input(T["lbl_ask_mic"], key="ask_mic", label_visibility="collapsed")
     if ask_audio is not None and voice_ready:
         payload = ask_audio.getvalue()
         digest = hashlib.md5(payload).hexdigest()
@@ -1016,18 +1201,13 @@ with tabs[5]:
                     st.code(str(exc))
 
     question = st.text_input(
-        "Ask about your money",
+        T["lbl_ask"],
         key="ask_question",
-        placeholder="is mahine kitna kharch hua?",
+        placeholder=T["ask_placeholder"],
         label_visibility="collapsed",
     )
 
-    samples = [
-        "is mahine kitna kharch hua?",
-        "chai pe kitna gaya?",
-        "budget kitna bacha?",
-        "sabse mehnga kharch?",
-    ]
+    samples = T["ask_samples"]
     sample_cols = st.columns(2)
     for index, sample in enumerate(samples):
         if sample_cols[index % 2].button(sample, key=f"sample_q_{index}", use_container_width=True):
