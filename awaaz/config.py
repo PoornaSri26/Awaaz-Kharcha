@@ -27,6 +27,9 @@ GNANI_API_URL = os.getenv("GNANI_API_URL", "https://api.vachana.ai/stt/v3")
 LANGUAGES = {
     "Hinglish": "hi-IN",
     "తెలుగు": "te-IN",
+    "বাংলা": "bn-IN",
+    "தமிழ்": "ta-IN",
+    "ಕನ್ನಡ": "kn-IN",
     "English": "en-IN",
 }
 
