@@ -28,6 +28,7 @@ College students and daily commuters who split canteen chai, samosas, Rapido bik
 | **Voice notes** | Drop a forwarded WhatsApp `.ogg` / `.m4a` / `.mp3` / `.wav` / `.aac` clip instead of recording |
 | **No-mic path** | Type the same natural sentence, or use one-tap chips (Chai ₹20, Auto ₹80, Lunch ₹150, Recharge ₹299…) |
 | **Parsing** | Indian number words (`dedh sau`, `dhai hazar`, `paanch sau`, `रెండు వందలు`, `पाँच सौ`), comma / *aur* / *మరియు* lists, quantities ignored (`2 chai 20` → ₹20), relative dates (`aaj`, `kal`, `parso`, `eeroju`) |
+| **ML categorisation** | Char n-gram TF-IDF + logistic-regression classifier (`awaaz/nlp.py`) upgrades items the lexicon can't place; trained on lexicon templates + your own corrected rows via `train_model.py` |
 | **Categories** | Food, Travel, Groceries, Bills, Health, Shopping, Fun, Education, Other |
 | **Khata / Udhar** | Detect *"Ravi ko 500 udhar diya"*, per-person totals of who owes what, one-tap settle / reopen |
 | **Budget** | Persisted monthly budget, progress bar, 80% nudge and 90% alert, "safe to spend today" and per-day allowance for the remaining days |
@@ -102,6 +103,23 @@ python test_stt.py path/to/clip.wav   # or no argument for a silent test clip
 
 ---
 
+## 🧠 ML layer (category classifier)
+
+`awaaz/nlp.py` ships a trainable semantic classifier that sits *behind* the rule parser: when the lexicon cannot place an item (`Other`), the model — char n-gram TF-IDF + logistic regression, which handles code-mixed Telugu/Tamil/Hinglish without language-specific tokenisation — suggests a category if its confidence clears the threshold. No model file → identical behaviour to before.
+
+```bash
+python train_model.py          # lexicon templates + user-corrected rows in data/awaaz.db
+```
+
+Training blends two label sources: generated sentences from the category lexicon, and **your own edits** in the History tab (the highest-quality labels). Held-out accuracy on the lexicon set is ~95%; retrain any time the app accumulates corrections. Export a Spark-ready JSONL dataset with:
+
+```python
+from awaaz.pipeline import export_training_jsonl
+export_training_jsonl()   # -> data/training_data.jsonl  {"text","label","source","ts"}
+```
+
+See `docs/MODEL_CARD.md` for model details and limits.
+
 ## 🧪 Tests
 
 ```bash
@@ -122,6 +140,9 @@ awaaz/parser.py      number words, categorisation, expense + udhar parsing
 awaaz/store.py       SQLite persistence, settings, exports, v1 CSV migration
 awaaz/insights.py    totals, budget status, trends, weekly insight, Q&A engine
 awaaz/stt.py         Gnani Prisma client with typed errors
+awaaz/nlp.py        ML category classifier (TF-IDF + logistic regression)
+awaaz/pipeline.py   labelled-data export (JSONL, Spark-ready)
+train_model.py      classifier training entry point
 tests/               pytest suite
 seed_data.py         demo data (relative dates, no absolute paths)
 test_stt.py          API connectivity smoke check

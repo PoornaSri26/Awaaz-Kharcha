@@ -26,3 +26,7 @@ udhar_khata.csv.imported
 *.m4a
 *.ogg
 *.log
+
+# trained ML artefacts (rebuild with train_model.py)
+models/
+*.joblib

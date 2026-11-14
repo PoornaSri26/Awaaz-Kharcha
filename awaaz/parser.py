@@ -359,6 +359,24 @@ def categorize(text: str) -> str:
     return "Other"
 
 
+def categorize_smart(text: str) -> str:
+    """Rule-based category, upgraded by the ML classifier when rules say 'Other'.
+
+    The model (``models/category_clf.joblib``, trained via ``train_model.py``)
+    is only consulted as a fallback, so behaviour is unchanged when no model is
+    present and deterministic in tests.
+    """
+    cat = categorize(text)
+    if cat != "Other":
+        return cat
+    try:
+        from . import nlp
+
+        return nlp.suggest_category(text, cat)
+    except Exception:
+        return cat
+
+
 def normalize_category(name: str) -> str:
     """Map any category label (including v1 names) onto the current taxonomy."""
     if not name:
@@ -467,7 +485,7 @@ def parse_bank_sms(text: str, today: dt.date | None = None) -> dict | None:
         "date": detect_date(cleaned, today).isoformat(),
         "item": item,
         "amount": round(amount, 2),
-        "category": categorize(merchant or cleaned),
+        "category": categorize_smart(merchant or cleaned),
         "merchant": merchant,
         "payment_mode": detect_payment_mode(cleaned) or ("Netbanking" if kind == "Income" else None),
         "kind": kind,
@@ -624,7 +642,7 @@ def parse_expenses(
                         "date": row_date.isoformat(),
                         "item": _title(item_text) or "General",
                         "amount": round(amount, 2),
-                        "category": categorize(part),
+                        "category": categorize_smart(part),
                         "merchant": merchant,
                         "payment_mode": detect_payment_mode(part) or sentence_mode,
                         "kind": detect_kind(part),
