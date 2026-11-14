@@ -2,7 +2,7 @@
 pytest>=8.0.0
 
 # NLP fine-tuning (optional, Colab/GPU)
-transformers>=4.40
-datasets>=2.18
+transformers==4.46.3  # 5.x breaks with current torch/torchvision
+datasets==3.2.0
 seqeval>=1.2
 peft>=0.10
