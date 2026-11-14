@@ -103,6 +103,10 @@ python test_stt.py path/to/clip.wav   # or no argument for a silent test clip
 
 ---
 
+## 🎧 Audio preprocessing (`awaaz/audio.py`)
+
+Local CPU-only DSP front-end that sits before STT: `preprocess()` decodes any voice note to 16 kHz mono, `denoise()` does spectral-subtraction noise reduction, `voice_activity()` segments speech for endpointing, `mfcc()` extracts cepstral features, and `diarize()` wraps pyannote when `HF_TOKEN` is set. No downloads, no GPU — degrades gracefully without optional deps.
+
 ## 🧠 ML layer (category classifier)
 
 `awaaz/nlp.py` ships a trainable semantic classifier that sits *behind* the rule parser: when the lexicon cannot place an item (`Other`), the model — char n-gram TF-IDF + logistic regression, which handles code-mixed Telugu/Tamil/Hinglish without language-specific tokenisation — suggests a category if its confidence clears the threshold. No model file → identical behaviour to before.
@@ -142,6 +146,7 @@ awaaz/insights.py    totals, budget status, trends, weekly insight, Q&A engine
 awaaz/stt.py         Gnani Prisma client with typed errors
 awaaz/nlp.py        ML category classifier (TF-IDF + logistic regression)
 awaaz/pipeline.py   labelled-data export (JSONL, Spark-ready)
+awaaz/audio.py      denoise, VAD, MFCC, optional diarization
 train_model.py      classifier training entry point
 tests/               pytest suite
 seed_data.py         demo data (relative dates, no absolute paths)
