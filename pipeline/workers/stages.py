@@ -23,6 +23,8 @@ class JobResult:
     speakers: list = field(default_factory=list)
     stages_ms: dict = field(default_factory=dict)
     errors: list = field(default_factory=list)
+    confidence: float = 1.0
+    needs_review: bool = False
     ok: bool = True
 
 
@@ -54,9 +56,15 @@ def run_job(audio_path: str, job_id: str = "job", language: str | None = None,
     res.language = stage("langid", lambda: stt_local.detect_language(audio_path)) or language
     segs = stage("stt", lambda: stt_local.transcribe(audio_path, language=res.language))
     res.transcript = " ".join(s["text"] for s in (segs or [])).strip()
+    # confidence signal: whisper avg_logprob when available, else heuristic
+    logprobs = [abs(s.get("avg_logprob", -1.0)) for s in (segs or []) if s.get("avg_logprob") is not None]
+    if logprobs:
+        res.confidence = round(sum(logprobs) / len(logprobs), 3)
+    res.needs_review = res.confidence < 0.6 or bool(res.errors)
     if not res.transcript:
         res.ok = False
         res.errors.append("stt: empty transcript")
+        _log_job(res)
         return res
     stage("diarize", lambda: dsp.diarize(audio_path, num_speakers=num_speakers))
     # attach speaker index to transcript segments when diarization is available
@@ -64,4 +72,19 @@ def run_job(audio_path: str, job_id: str = "job", language: str | None = None,
     if parsed:
         res.expenses = parsed[0]
     res.ok = True
+    _log_job(res)
     return res
+
+
+def _log_job(res: "JobResult", path: str = "pipeline/results/job_log.jsonl") -> None:
+    """Append a structured record — the raw material for error-rate-over-time
+    and low-confidence review dashboards."""
+    import json
+    from pathlib import Path
+    p = Path(path); p.parent.mkdir(parents=True, exist_ok=True)
+    rec = {"job_id": res.job_id, "ok": res.ok, "confidence": res.confidence,
+           "needs_review": res.needs_review, "language": res.language,
+           "total_ms": sum(res.stages_ms.values()),
+           "stages_ms": res.stages_ms, "errors": res.errors}
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(rec, ensure_ascii=False) + "\n")

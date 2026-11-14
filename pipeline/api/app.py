@@ -34,6 +34,6 @@ async def create_job(file: UploadFile = File(...),
         return {"job_id": res.job_id, "ok": res.ok, "transcript": res.transcript,
                 "language": res.language, "expenses": res.expenses,
                 "stages_ms": res.stages_ms, "total_ms": total_ms,
-                "errors": res.errors}
+                "errors": res.errors, "confidence": res.confidence, "needs_review": res.needs_review}
     finally:
         Path(tmp_path).unlink(missing_ok=True)

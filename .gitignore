@@ -37,3 +37,6 @@ nlp/data/*
 !nlp/data/*.md
 !nlp/data/*.py
 !nlp/data/*.jsonl
+
+# runtime job logs
+pipeline/results/
