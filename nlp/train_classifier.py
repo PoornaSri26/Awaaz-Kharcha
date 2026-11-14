@@ -57,6 +57,9 @@ def main() -> int:
     ds["train"] = ds["train"].map(lambda b: {"labels": LABEL2ID.get(b["category"], 8)})
     ds["val"] = ds["val"].map(lambda b: {"labels": LABEL2ID.get(b["category"], 8)})
     ds["test"] = ds["test"].map(lambda b: {"labels": LABEL2ID.get(b["category"], 8)})
+    keep = {"input_ids", "attention_mask", "token_type_ids", "labels"}
+    ds = {k: v.remove_columns([c for c in v.column_names if c not in keep])
+          for k, v in ds.items()}
 
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(LABELS), id2label={i: l for l, i in LABEL2ID.items()},

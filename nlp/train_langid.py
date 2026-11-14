@@ -48,6 +48,9 @@ def main() -> int:
     for k in ds:
         ds[k] = ds[k].map(lambda b: tok(b["text"], truncation=True, max_length=64))
         ds[k] = ds[k].map(lambda b: {"labels": LANG2ID.get(b["lang"], 0)})
+    keep = {"input_ids", "attention_mask", "token_type_ids", "labels"}
+    ds = {k: v.remove_columns([c for c in v.column_names if c not in keep])
+          for k, v in ds.items()}
 
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(LANGS), id2label={i: l for l, i in LANG2ID.items()},
