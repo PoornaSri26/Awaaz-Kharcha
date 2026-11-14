@@ -53,8 +53,10 @@ def run_job(audio_path: str, job_id: str = "job", language: str | None = None,
     clean = stage("denoise", lambda: dsp.highpass(dsp.denoise(audio_arr, sr)))
     if clean is not None:
         stage("vad", lambda: dsp.voice_activity(clean, sr))
-    res.language = stage("langid", lambda: stt_local.detect_language(audio_path)) or language
-    segs = stage("stt", lambda: stt_local.transcribe(audio_path, language=res.language))
+    # STT first — its segments carry language info; avoids a second
+    # full transcription just for language ID (was the pipeline bottleneck).
+    segs = stage("stt", lambda: stt_local.transcribe(audio_path, language=language))
+    res.language = language or (segs[0].get("language") if segs else None)         or stage("langid", lambda: stt_local.detect_language(audio_path))
     res.transcript = " ".join(s["text"] for s in (segs or [])).strip()
     # confidence signal: whisper avg_logprob when available, else heuristic
     logprobs = [abs(s.get("avg_logprob", -1.0)) for s in (segs or []) if s.get("avg_logprob") is not None]
