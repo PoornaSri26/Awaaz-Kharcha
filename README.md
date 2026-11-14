@@ -111,6 +111,24 @@ Local CPU-only DSP front-end: `preprocess()` decodes to 16 kHz mono, `highpass()
 
 Local CPU-only DSP front-end that sits before STT: `preprocess()` decodes any voice note to 16 kHz mono, `denoise()` does spectral-subtraction noise reduction, `voice_activity()` segments speech for endpointing, `mfcc()` extracts cepstral features, and `diarize()` wraps pyannote when `HF_TOKEN` is set. No downloads, no GPU — degrades gracefully without optional deps.
 
+## 📊 Evaluation (`eval/`)
+
+```bash
+python eval/make_clips.py --out eval/clips --n 10   # synthetic speech-like clips at 0/5/10/20 dB SNR
+python -c "from awaaz.eval import snr_benchmark; from pathlib import Path;   import collections; rows=snr_benchmark(sorted(map(str,Path('eval/clips').glob('*_snr*.wav'))));   agg=collections.defaultdict(list); [agg[r['target_snr_db']].append(r['delta_db']) for r in rows];   [print(k, round(sum(v)/len(v),1),'dB') for k,v in sorted(agg.items())]"
+```
+
+Measured on the synthetic clip set (harmonic speech-like bursts + white noise):
+
+| Target SNR | Mean SNR gain after denoise |
+|---|---|
+| 0 dB | **+9.9 dB** |
+| 5 dB | **+11.2 dB** |
+| 10 dB | **+11.7 dB** |
+| 20 dB | **+12.1 dB** |
+
+These are DSP-level numbers on synthetic signals — they prove the denoiser lowers the noise floor, not WER. For real WER/DER numbers, record ~20 clips per language and run `awaaz.eval.word_error_rate` / `diarization_error_rate` (jiwer / pyannote.metrics) — see `docs/MODEL_CARD.md`-style honesty note: cite only what you measured.
+
 ## 🧠 ML layer (category classifier)
 
 `awaaz/nlp.py` ships a trainable semantic classifier that sits *behind* the rule parser: when the lexicon cannot place an item (`Other`), the model — char n-gram TF-IDF + logistic regression, which handles code-mixed Telugu/Tamil/Hinglish without language-specific tokenisation — suggests a category if its confidence clears the threshold. No model file → identical behaviour to before.
