@@ -30,3 +30,10 @@ udhar_khata.csv.imported
 # trained ML artefacts (rebuild with train_model.py)
 models/
 *.joblib
+
+# but keep the nlp training data dir
+!nlp/data/
+nlp/data/*
+!nlp/data/*.md
+!nlp/data/*.py
+!nlp/data/*.jsonl
