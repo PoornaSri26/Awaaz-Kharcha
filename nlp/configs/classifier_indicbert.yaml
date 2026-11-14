@@ -1,0 +1,7 @@
+model: ai4bharat/IndicBERT_v2
+data: nlp/data/synthetic.jsonl
+out: nlp/models/category_indicbert
+epochs: 3
+batch: 16
+lr: 2.0e-5
+lora: false

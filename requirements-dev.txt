@@ -1,2 +1,8 @@
 -r requirements.txt
 pytest>=8.0.0
+
+# NLP fine-tuning (optional, Colab/GPU)
+transformers>=4.40
+datasets>=2.18
+seqeval>=1.2
+peft>=0.10

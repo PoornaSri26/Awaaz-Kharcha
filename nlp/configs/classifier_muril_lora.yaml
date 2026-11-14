@@ -1,0 +1,7 @@
+model: google/muril-base-cased
+lora: true
+epochs: 4
+batch: 16
+lr: 1.0e-4
+out: nlp/models/category_muril_lora
+data: nlp/data/synthetic.jsonl

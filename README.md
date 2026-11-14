@@ -129,6 +129,24 @@ Measured on the synthetic clip set (harmonic speech-like bursts + white noise):
 
 These are DSP-level numbers on synthetic signals — they prove the denoiser lowers the noise floor, not WER. For real WER/DER numbers, record ~20 clips per language and run `awaaz.eval.word_error_rate` / `diarization_error_rate` (jiwer / pyannote.metrics) — see `docs/MODEL_CARD.md`-style honesty note: cite only what you measured.
 
+## 🤖 NLP fine-tuning (`nlp/`)
+
+Transformer fine-tuning experiments for the post-STT text: **category classification**, **entity extraction** (AMOUNT/ITEM/PAYEE/DATE, BIO) and **language ID / code-mix detection** across en/hi/te/ta/hinglish.
+
+```bash
+python nlp/data/gen_synthetic.py --per-lang 60   # starter synthetic set -> nlp/data/synthetic.jsonl
+python nlp/train_classifier.py --model ai4bharat/IndicBERT_v2 --data nlp/data/synthetic.jsonl
+python nlp/train_ner.py          --model ai4bharat/IndicBERT_v2
+python nlp/train_langid.py       --model xlm-roberta-base
+python nlp/evaluate.py           # aggregate test_report.json -> nlp/results/results.csv
+```
+
+- LoRA/PEFT variants via `--lora` or `nlp/configs/*.yaml`
+- `nlp/augment.py`: ASR-style noise (word dropout, spelling variants) + stratified splits
+- `nlp/data/ANNOTATION_GUIDE.md`: how to add real human-labelled rows
+- Models: IndicBERT v2, MuRIL, XLM-R, mBERT — compare via configs
+- See `docs/MODEL_CARD.md` for the classical model; a transformer model card goes in `nlp/MODEL_CARD.md` after training
+
 ## 🧠 ML layer (category classifier)
 
 `awaaz/nlp.py` ships a trainable semantic classifier that sits *behind* the rule parser: when the lexicon cannot place an item (`Other`), the model — char n-gram TF-IDF + logistic regression, which handles code-mixed Telugu/Tamil/Hinglish without language-specific tokenisation — suggests a category if its confidence clears the threshold. No model file → identical behaviour to before.
@@ -173,6 +191,7 @@ awaaz/stt_local.py  optional faster-whisper ASR + language ID
 awaaz/eval.py       WER/DER/SNR metrics + latency timer
 api.py              optional FastAPI voice-expense service
 train_model.py      classifier training entry point
+nlp/                 transformer fine-tuning (data, train, eval, configs)
 tests/               pytest suite
 seed_data.py         demo data (relative dates, no absolute paths)
 test_stt.py          API connectivity smoke check

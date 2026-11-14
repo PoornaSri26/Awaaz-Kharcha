@@ -1,0 +1,7 @@
+model: xlm-roberta-base
+out: nlp/models/langid_xlmr
+epochs: 3
+batch: 16
+lr: 2.0e-5
+lora: false
+data: nlp/data/synthetic.jsonl
