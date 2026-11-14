@@ -40,7 +40,7 @@ def main() -> int:
     from datasets import Dataset
     from sklearn.metrics import accuracy_score, f1_score
     from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                              Trainer, TrainingArguments)
+                              DataCollatorWithPadding, Trainer, TrainingArguments)
 
     rows = load_jsonl(args.data)
     from nlp.augment import split_rows
@@ -85,7 +85,8 @@ def main() -> int:
         report_to=[], seed=42, max_steps=args.max_steps)
 
     trainer = Trainer(model=model, args=targs, train_dataset=ds["train"],
-                      eval_dataset=ds["val"], compute_metrics=metrics)
+                      eval_dataset=ds["val"], compute_metrics=metrics,
+                      data_collator=DataCollatorWithPadding(tokenizer=tok))
     trainer.train()
 
     # held-out test report

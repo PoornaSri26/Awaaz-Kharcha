@@ -62,7 +62,7 @@ def main() -> int:
     from datasets import Dataset
     from seqeval.metrics import accuracy_score, f1_score, precision_score, recall_score
     from transformers import (AutoModelForTokenClassification, AutoTokenizer,
-                              Trainer, TrainingArguments)
+                              DataCollatorForTokenClassification, Trainer, TrainingArguments)
 
     rows = [r for r in load_jsonl(args.data) if r.get("entities")]
     from nlp.augment import split_rows
@@ -125,7 +125,8 @@ def main() -> int:
         report_to=[], seed=42, max_steps=args.max_steps)
 
     trainer = Trainer(model=model, args=targs, train_dataset=ds["train"],
-                      eval_dataset=ds["val"], compute_metrics=metrics)
+                      eval_dataset=ds["val"], compute_metrics=metrics,
+                      data_collator=DataCollatorForTokenClassification(tokenizer=tok))
     trainer.train()
     yt, yp = to_seqeval(trainer.predict(ds["test"]))
     report = {"model": args.model,

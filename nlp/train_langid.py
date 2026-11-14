@@ -36,7 +36,7 @@ def main() -> int:
     from datasets import Dataset
     from sklearn.metrics import accuracy_score, f1_score
     from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                              Trainer, TrainingArguments)
+                              DataCollatorWithPadding, Trainer, TrainingArguments)
 
     from nlp.augment import split_rows
     rows = load_jsonl(args.data)
@@ -71,7 +71,8 @@ def main() -> int:
         load_best_model_at_end=True, metric_for_best_model="macro_f1",
         report_to=[], seed=42)
     trainer = Trainer(model=model, args=targs, train_dataset=ds["train"],
-                      eval_dataset=ds["val"], compute_metrics=metrics)
+                      eval_dataset=ds["val"], compute_metrics=metrics,
+                      data_collator=DataCollatorWithPadding(tokenizer=tok))
     trainer.train()
     pred = trainer.predict(ds["test"])
     report = {"model": args.model, "lora": args.lora,
