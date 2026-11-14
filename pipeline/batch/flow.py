@@ -42,6 +42,7 @@ def build_dataset(clips_dir: str, out_parquet: str) -> dict:
             rows.append({"path": str(p), "accept": False, "error": str(e)})
     accepted = [r for r in rows if r.get("accept")]
     if HAVE_PA and accepted:
+        Path(out_parquet).parent.mkdir(parents=True, exist_ok=True)
         table = pa.Table.from_pylist(accepted)
         pq.write_table(table, out_parquet)
     Path(out_parquet + ".json").write_text(json.dumps(rows, indent=2))
