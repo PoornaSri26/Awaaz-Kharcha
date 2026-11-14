@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    ports: ["8100:8100"]
+    volumes: [".:/app"]
+    command: uvicorn pipeline.api.app:app --host 0.0.0.0 --port 8100
+  worker:
+    build: .
+    volumes: [".:/app"]
+    command: python -m pipeline.workers.runner bench eval/clips
