@@ -103,6 +103,10 @@ python test_stt.py path/to/clip.wav   # or no argument for a silent test clip
 
 ---
 
+## 🎧 Audio pipeline (`awaaz/audio.py`, `awaaz/stt_local.py`, `awaaz/eval.py`)
+
+Local CPU-only DSP front-end: `preprocess()` decodes to 16 kHz mono, `highpass()` removes rumble, `denoise()` does spectral-subtraction noise reduction, `voice_activity()` segments speech, `mfcc_delta()`/`logmel_spectrogram()`/`pitch_f0()` extract acoustic features, and `diarize()` wraps pyannote when `HF_TOKEN` is set. `stt_local.py` adds optional faster-whisper transcription + language ID; `eval.py` has SNR-benchmark, WER (jiwer) and DER (pyannote.metrics) helpers plus per-stage latency timing. `api.py` exposes the whole thing as a FastAPI service (`uvicorn api:app`).
+
 ## 🎧 Audio preprocessing (`awaaz/audio.py`)
 
 Local CPU-only DSP front-end that sits before STT: `preprocess()` decodes any voice note to 16 kHz mono, `denoise()` does spectral-subtraction noise reduction, `voice_activity()` segments speech for endpointing, `mfcc()` extracts cepstral features, and `diarize()` wraps pyannote when `HF_TOKEN` is set. No downloads, no GPU — degrades gracefully without optional deps.
@@ -146,7 +150,10 @@ awaaz/insights.py    totals, budget status, trends, weekly insight, Q&A engine
 awaaz/stt.py         Gnani Prisma client with typed errors
 awaaz/nlp.py        ML category classifier (TF-IDF + logistic regression)
 awaaz/pipeline.py   labelled-data export (JSONL, Spark-ready)
-awaaz/audio.py      denoise, VAD, MFCC, optional diarization
+awaaz/audio.py      denoise, VAD, MFCC/mel/pitch features, SNR eval utils
+awaaz/stt_local.py  optional faster-whisper ASR + language ID
+awaaz/eval.py       WER/DER/SNR metrics + latency timer
+api.py              optional FastAPI voice-expense service
 train_model.py      classifier training entry point
 tests/               pytest suite
 seed_data.py         demo data (relative dates, no absolute paths)

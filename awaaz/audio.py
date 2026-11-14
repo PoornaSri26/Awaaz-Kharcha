@@ -322,3 +322,120 @@ def diarize(
         return segs
     except Exception:
         return []
+
+
+# ------------------------------------------------------- stage-1 extras
+
+def highpass(audio: np.ndarray, sr: int = TARGET_SR, cutoff: float = 80.0) -> np.ndarray:
+    """Butterworth high-pass — removes DC/rumble below ~80 Hz before STT."""
+    sos = signal.butter(4, cutoff, btype="highpass", fs=sr, output="sos")
+    return signal.sosfilt(sos, audio).astype(np.float32)
+
+
+def logmel_spectrogram(
+    audio: np.ndarray,
+    sr: int = TARGET_SR,
+    n_fft: int = 512,
+    hop_ms: float = 10.0,
+    n_mels: int = 64,
+) -> np.ndarray:
+    """Log-mel spectrogram ``(n_mels, n_frames)`` — standard ASR frontend."""
+    if len(audio) < n_fft:
+        return np.zeros((n_mels, 0), dtype=np.float32)
+    hop = int(hop_ms * sr / 1000)
+    _, _, Z = signal.stft(audio, fs=sr, nperseg=n_fft, noverlap=n_fft - hop)
+    mag = np.abs(Z)
+    fb = _mel_filterbank(sr, n_fft, n_mels)
+    mel = mag.T @ fb.T  # (frames, mels)
+    return np.log(np.maximum(mel, 1e-10)).T.astype(np.float32)
+
+
+def mfcc_delta(audio: np.ndarray, sr: int = TARGET_SR, n_mfcc: int = 13) -> np.ndarray:
+    """MFCCs concatenated with their first and second derivatives."""
+    base = mfcc(audio, sr, n_mfcc=n_mfcc)
+    if base.shape[0] < 3:
+        return base
+    d1 = np.vstack([base[1] - base[0], np.diff(base, axis=0)])
+    d2 = np.vstack([d1[1] - d1[0], np.diff(d1, axis=0)])
+    return np.hstack([base, d1, d2]).astype(np.float32)
+
+
+def pitch_f0(
+    audio: np.ndarray,
+    sr: int = TARGET_SR,
+    fmin: float = 60.0,
+    fmax: float = 500.0,
+    frame_ms: float = 40.0,
+) -> np.ndarray:
+    """F0 contour via autocorrelation — voiced-frame pitch in Hz (0 = unvoiced).
+
+    Useful for language/speaker cues (Indic pitch ranges differ from
+    English) and for voicing-aware VAD refinement.
+    """
+    if len(audio) == 0:
+        return np.zeros(0, dtype=np.float32)
+    n = int(frame_ms * sr / 1000)
+    h = n // 2
+    if len(audio) < n:
+        return np.zeros(1, dtype=np.float32)
+    count = 1 + (len(audio) - n) // h
+    idx = np.arange(n)[None, :] + h * np.arange(count)[:, None]
+    frames = audio[idx].astype(np.float32)
+    frames *= np.hanning(n)
+    # normalised autocorrelation
+    ac = np.array([np.correlate(fr, fr, mode="full")[n - 1:] for fr in frames])
+    ac /= np.maximum(ac[:, :1], 1e-9)
+    lo, hi = int(sr / fmax), int(sr / fmin)
+    lo = max(lo, 1)
+    hi = min(hi, ac.shape[1] - 1)
+    if hi <= lo:
+        return np.zeros(count, dtype=np.float32)
+    lag = lo + np.argmax(ac[:, lo:hi], axis=1)
+    rms = np.sqrt(np.mean(frames**2, axis=1))
+    voiced = rms > 0.02  # absolute-energy voicing gate
+    f0 = np.where(voiced, sr / lag, 0.0)
+    return f0.astype(np.float32)
+
+
+def rms_envelope(audio: np.ndarray, sr: int = TARGET_SR, hop_ms: float = 10.0) -> np.ndarray:
+    """Short-time RMS envelope — cheap loudness/endpointing feature."""
+    if len(audio) == 0:
+        return np.zeros(0, dtype=np.float32)
+    hop = int(hop_ms * sr / 1000)
+    count = max(1, len(audio) // hop)
+    idx = np.arange(hop)[None, :] + hop * np.arange(count)[:, None]
+    idx = idx[idx.max(axis=1) < len(audio)]
+    if idx.size == 0:
+        return np.zeros(1, dtype=np.float32)
+    return np.sqrt(np.mean(audio[idx] ** 2, axis=1)).astype(np.float32)
+
+
+def spectral_centroid(audio: np.ndarray, sr: int = TARGET_SR) -> float:
+    """Mean spectral centroid in Hz — brightness measure."""
+    if len(audio) == 0:
+        return 0.0
+    f = np.abs(np.fft.rfft(audio * np.hanning(len(audio))))
+    freqs = np.fft.rfftfreq(len(audio), 1 / sr)
+    return float(np.sum(freqs * f) / max(np.sum(f), 1e-9))
+
+
+# ------------------------------------------------------------- eval utils
+
+def add_noise(audio: np.ndarray, snr_db: float, seed: int = 0) -> np.ndarray:
+    """Mix stationary white noise at a target SNR — for denoise/WER evals."""
+    rng = np.random.default_rng(seed)
+    noise = rng.standard_normal(len(audio)).astype(np.float32)
+    p_sig = float(np.mean(audio**2)) + 1e-12
+    p_noise = float(np.mean(noise**2))
+    gain = np.sqrt(p_sig / (p_noise * 10 ** (snr_db / 10)))
+    return (audio + gain * noise).astype(np.float32)
+
+
+def estimate_snr(audio: np.ndarray, sr: int = TARGET_SR) -> float:
+    """Rough SNR estimate (dB) from frame-energy percentiles."""
+    rms = rms_envelope(audio, sr)
+    if rms.size == 0 or rms.max() <= 0:
+        return float("-inf")
+    p_sig = float(np.percentile(rms, 90) ** 2)
+    p_noise = float(np.percentile(rms, 10) ** 2) + 1e-12
+    return float(10 * np.log10(p_sig / p_noise))
