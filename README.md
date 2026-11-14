@@ -147,6 +147,8 @@ python nlp/evaluate.py           # aggregate test_report.json -> nlp/results/res
 - Models: IndicBERT v2, MuRIL, XLM-R, mBERT — compare via configs
 - See `docs/MODEL_CARD.md` for the classical model; a transformer model card goes in `nlp/MODEL_CARD.md` after training
 
+📄 **[Multilingual audio pipeline docs](docs/MULTILINGUAL_AUDIO.md)** — techniques, measurements, code map
+
 ## 🧠 ML layer (category classifier)
 
 `awaaz/nlp.py` ships a trainable semantic classifier that sits *behind* the rule parser: when the lexicon cannot place an item (`Other`), the model — char n-gram TF-IDF + logistic regression, which handles code-mixed Telugu/Tamil/Hinglish without language-specific tokenisation — suggests a category if its confidence clears the threshold. No model file → identical behaviour to before.

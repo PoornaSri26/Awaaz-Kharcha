@@ -1,0 +1,1059 @@
+{
+  "n_clips": 50,
+  "n_ok": 15,
+  "p50_ms": 6291.1,
+  "mean_ms": 11251.9,
+  "clips_per_hour": 319.9,
+  "rows": [
+    {
+      "job_id": "clip_00_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 2.9,
+        "denoise": 83.0,
+        "vad": 3.5,
+        "langid": 12922.7,
+        "stt": 3311.7
+      },
+      "total_ms": 16360.3,
+      "rtf": 8.18,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_00_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.5,
+        "denoise": 35.5,
+        "vad": 1.3,
+        "langid": 4763.3,
+        "stt": 2901.3
+      },
+      "total_ms": 7707.6,
+      "rtf": 3.854,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_00_snr10",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 31.3,
+        "vad": 1.4,
+        "langid": 4756.1,
+        "stt": 2998.2
+      },
+      "total_ms": 7793.3,
+      "rtf": 3.897,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_00_snr20",
+      "ok": true,
+      "transcript": "Oh",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 55.7,
+        "vad": 2.0,
+        "langid": 4672.6,
+        "stt": 2313.3,
+        "diarize": 11077.0,
+        "nlp": 6.1
+      },
+      "total_ms": 18134.4,
+      "rtf": 9.067,
+      "errors": [],
+      "confidence": 0.767,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_00_snr5",
+      "ok": true,
+      "transcript": "You",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.3,
+        "denoise": 31.2,
+        "vad": 1.7,
+        "langid": 3787.5,
+        "stt": 2030.9,
+        "diarize": 1.1,
+        "nlp": 0.7
+      },
+      "total_ms": 5858.5,
+      "rtf": 2.929,
+      "errors": [],
+      "confidence": 0.991,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_01_clean",
+      "ok": true,
+      "transcript": "Oh, oh, oh.",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 28.1,
+        "vad": 1.8,
+        "langid": 10803.8,
+        "stt": 4797.7,
+        "diarize": 0.8,
+        "nlp": 0.5
+      },
+      "total_ms": 15637.6,
+      "rtf": 7.819,
+      "errors": [],
+      "confidence": 1.085,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_01_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 29.7,
+        "vad": 1.4,
+        "langid": 3637.5,
+        "stt": 2007.3
+      },
+      "total_ms": 5681.1,
+      "rtf": 2.841,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_01_snr10",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.8,
+        "denoise": 25.6,
+        "vad": 0.9,
+        "langid": 3642.1,
+        "stt": 2176.4
+      },
+      "total_ms": 5852.6,
+      "rtf": 2.926,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_01_snr20",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.5,
+        "denoise": 28.2,
+        "vad": 1.4,
+        "langid": 3953.3,
+        "stt": 12453.2
+      },
+      "total_ms": 16443.0,
+      "rtf": 8.222,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_01_snr5",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.7,
+        "denoise": 31.0,
+        "vad": 1.8,
+        "langid": 4002.5,
+        "stt": 2294.6
+      },
+      "total_ms": 6335.6,
+      "rtf": 3.168,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_02_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.3,
+        "denoise": 36.7,
+        "vad": 2.9,
+        "langid": 4222.7,
+        "stt": 20.8
+      },
+      "total_ms": 4287.4,
+      "rtf": 2.144,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_02_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.7,
+        "denoise": 32.5,
+        "vad": 1.6,
+        "langid": 5247.2,
+        "stt": 2826.1
+      },
+      "total_ms": 8112.5,
+      "rtf": 4.056,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_02_snr10",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.5,
+        "denoise": 38.6,
+        "vad": 1.4,
+        "langid": 4680.0,
+        "stt": 2253.8
+      },
+      "total_ms": 6979.0,
+      "rtf": 3.49,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_02_snr20",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 28.2,
+        "vad": 3.6,
+        "langid": 4191.4,
+        "stt": 11844.5
+      },
+      "total_ms": 16072.9,
+      "rtf": 8.036,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_02_snr5",
+      "ok": true,
+      "transcript": "Hmmmmmmmmmmmmmm",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.7,
+        "denoise": 27.7,
+        "vad": 1.2,
+        "langid": 29604.6,
+        "stt": 2408.2,
+        "diarize": 0.8,
+        "nlp": 0.5
+      },
+      "total_ms": 32048.2,
+      "rtf": 16.024,
+      "errors": [],
+      "confidence": 0.948,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_03_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 28.7,
+        "vad": 1.5,
+        "langid": 4966.0,
+        "stt": 20.1
+      },
+      "total_ms": 5021.5,
+      "rtf": 2.511,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_03_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 2.1,
+        "denoise": 31.3,
+        "vad": 1.5,
+        "langid": 3888.9,
+        "stt": 2057.4
+      },
+      "total_ms": 5984.8,
+      "rtf": 2.992,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_03_snr10",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 27.7,
+        "vad": 1.5,
+        "langid": 3926.9,
+        "stt": 2293.3
+      },
+      "total_ms": 6255.6,
+      "rtf": 3.128,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_03_snr20",
+      "ok": true,
+      "transcript": "You",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 31.5,
+        "vad": 1.0,
+        "langid": 3993.5,
+        "stt": 2540.5,
+        "diarize": 1.0,
+        "nlp": 0.6
+      },
+      "total_ms": 6573.6,
+      "rtf": 3.287,
+      "errors": [],
+      "confidence": 0.998,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_03_snr5",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 30.3,
+        "vad": 1.3,
+        "langid": 4070.7,
+        "stt": 2319.9
+      },
+      "total_ms": 6428.8,
+      "rtf": 3.214,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_04_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.5,
+        "denoise": 30.3,
+        "vad": 1.3,
+        "langid": 5285.4,
+        "stt": 19.9
+      },
+      "total_ms": 5342.8,
+      "rtf": 2.671,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_04_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 29.5,
+        "vad": 1.4,
+        "langid": 4034.6,
+        "stt": 2086.0
+      },
+      "total_ms": 6156.6,
+      "rtf": 3.078,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_04_snr10",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.8,
+        "denoise": 28.0,
+        "vad": 3.3,
+        "langid": 3711.7,
+        "stt": 2377.0
+      },
+      "total_ms": 6126.8,
+      "rtf": 3.063,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_04_snr20",
+      "ok": true,
+      "transcript": "Oh",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.8,
+        "denoise": 30.0,
+        "vad": 1.5,
+        "langid": 4008.3,
+        "stt": 2150.2,
+        "diarize": 1.1,
+        "nlp": 0.5
+      },
+      "total_ms": 6197.4,
+      "rtf": 3.099,
+      "errors": [],
+      "confidence": 0.666,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_04_snr5",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.8,
+        "denoise": 26.7,
+        "vad": 1.3,
+        "langid": 4159.2,
+        "stt": 2308.9
+      },
+      "total_ms": 6504.4,
+      "rtf": 3.252,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_05_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.5,
+        "denoise": 32.5,
+        "vad": 1.4,
+        "langid": 4142.8,
+        "stt": 20.6
+      },
+      "total_ms": 4202.6,
+      "rtf": 2.101,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_05_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 34.5,
+        "vad": 1.7,
+        "langid": 4373.4,
+        "stt": 2541.2
+      },
+      "total_ms": 6956.2,
+      "rtf": 3.478,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_05_snr10",
+      "ok": true,
+      "transcript": "Oh",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 29.6,
+        "vad": 0.9,
+        "langid": 4526.8,
+        "stt": 2240.1,
+        "diarize": 0.9,
+        "nlp": 0.6
+      },
+      "total_ms": 6805.5,
+      "rtf": 3.403,
+      "errors": [],
+      "confidence": 0.813,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_05_snr20",
+      "ok": true,
+      "transcript": "Uh-oh, uh-oh.",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.9,
+        "denoise": 33.3,
+        "vad": 1.3,
+        "langid": 4205.0,
+        "stt": 2140.2,
+        "diarize": 1.0,
+        "nlp": 0.5
+      },
+      "total_ms": 6387.0,
+      "rtf": 3.193,
+      "errors": [],
+      "confidence": 0.694,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_05_snr5",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.8,
+        "denoise": 26.4,
+        "vad": 1.0,
+        "langid": 3829.6,
+        "stt": 2206.5
+      },
+      "total_ms": 6069.7,
+      "rtf": 3.035,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_06_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.8,
+        "denoise": 38.7,
+        "vad": 1.7,
+        "langid": 4041.8,
+        "stt": 1968.6
+      },
+      "total_ms": 6055.8,
+      "rtf": 3.028,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_06_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 2.3,
+        "denoise": 27.5,
+        "vad": 1.0,
+        "langid": 3641.7,
+        "stt": 2130.2
+      },
+      "total_ms": 5807.1,
+      "rtf": 2.904,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_06_snr10",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.1,
+        "denoise": 29.7,
+        "vad": 1.6,
+        "langid": 3983.7,
+        "stt": 2570.5
+      },
+      "total_ms": 6589.7,
+      "rtf": 3.295,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_06_snr20",
+      "ok": true,
+      "transcript": "Oh, oh, oh",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 25.9,
+        "vad": 1.5,
+        "langid": 3587.9,
+        "stt": 1891.3,
+        "diarize": 1.0,
+        "nlp": 0.7
+      },
+      "total_ms": 5515.7,
+      "rtf": 2.758,
+      "errors": [],
+      "confidence": 0.897,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_06_snr5",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 29.9,
+        "vad": 1.0,
+        "langid": 3791.9,
+        "stt": 2307.4
+      },
+      "total_ms": 6134.6,
+      "rtf": 3.067,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_07_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.1,
+        "denoise": 21.7,
+        "vad": 0.9,
+        "langid": 3803.2,
+        "stt": 1814.4
+      },
+      "total_ms": 5644.9,
+      "rtf": 2.822,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_07_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.2,
+        "denoise": 21.4,
+        "vad": 1.3,
+        "langid": 3961.6,
+        "stt": 1927.6
+      },
+      "total_ms": 5917.5,
+      "rtf": 2.959,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_07_snr10",
+      "ok": true,
+      "transcript": "Oh",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.7,
+        "denoise": 29.4,
+        "vad": 1.3,
+        "langid": 3491.2,
+        "stt": 1860.1,
+        "diarize": 1.0,
+        "nlp": 0.5
+      },
+      "total_ms": 5388.6,
+      "rtf": 2.694,
+      "errors": [],
+      "confidence": 0.977,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_07_snr20",
+      "ok": true,
+      "transcript": "Oh",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.1,
+        "denoise": 27.2,
+        "vad": 0.9,
+        "langid": 3248.4,
+        "stt": 1698.2,
+        "diarize": 1.0,
+        "nlp": 0.6
+      },
+      "total_ms": 4981.5,
+      "rtf": 2.491,
+      "errors": [],
+      "confidence": 0.593,
+      "needs_review": true
+    },
+    {
+      "job_id": "clip_07_snr5",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.2,
+        "denoise": 26.6,
+        "vad": 1.2,
+        "langid": 3301.5,
+        "stt": 1926.9
+      },
+      "total_ms": 5260.9,
+      "rtf": 2.63,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_08_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 22.2,
+        "vad": 1.4,
+        "langid": 24015.3,
+        "stt": 20.0
+      },
+      "total_ms": 24064.7,
+      "rtf": 12.032,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_08_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 29.5,
+        "vad": 1.3,
+        "langid": 4067.7,
+        "stt": 2331.1
+      },
+      "total_ms": 6434.9,
+      "rtf": 3.217,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_08_snr10",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.8,
+        "denoise": 28.8,
+        "vad": 1.2,
+        "langid": 3814.8,
+        "stt": 2011.5
+      },
+      "total_ms": 5861.5,
+      "rtf": 2.931,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_08_snr20",
+      "ok": true,
+      "transcript": "You",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.3,
+        "denoise": 30.6,
+        "vad": 1.4,
+        "langid": 24433.7,
+        "stt": 12909.5,
+        "diarize": 2.1,
+        "nlp": 0.6
+      },
+      "total_ms": 37386.9,
+      "rtf": 18.693,
+      "errors": [],
+      "confidence": 1.186,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_08_snr5",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 32.4,
+        "vad": 1.3,
+        "langid": 5167.1,
+        "stt": 2763.5
+      },
+      "total_ms": 7968.9,
+      "rtf": 3.984,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_09_clean",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.5,
+        "denoise": 30.7,
+        "vad": 1.4,
+        "langid": 5532.6,
+        "stt": 20.1
+      },
+      "total_ms": 5590.7,
+      "rtf": 2.795,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_09_snr0",
+      "ok": false,
+      "transcript": "",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.3,
+        "denoise": 29.9,
+        "vad": 1.3,
+        "langid": 4419.4,
+        "stt": 2093.3
+      },
+      "total_ms": 6549.7,
+      "rtf": 3.275,
+      "errors": [
+        "stt: empty transcript"
+      ],
+      "confidence": 1.0,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_09_snr10",
+      "ok": true,
+      "transcript": "Oh, oh, oh, oh...",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.3,
+        "denoise": 28.5,
+        "vad": 1.2,
+        "langid": 3994.0,
+        "stt": 2260.2,
+        "diarize": 1.3,
+        "nlp": 0.7
+      },
+      "total_ms": 6291.1,
+      "rtf": 3.146,
+      "errors": [],
+      "confidence": 0.724,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_09_snr20",
+      "ok": true,
+      "transcript": "Oh, oh, oh, oh...",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.6,
+        "denoise": 28.2,
+        "vad": 1.3,
+        "langid": 3617.9,
+        "stt": 2188.9,
+        "diarize": 1.0,
+        "nlp": 0.7
+      },
+      "total_ms": 5843.5,
+      "rtf": 2.922,
+      "errors": [],
+      "confidence": 0.761,
+      "needs_review": false
+    },
+    {
+      "job_id": "clip_09_snr5",
+      "ok": true,
+      "transcript": "Oh, oh, oh...",
+      "language": "en",
+      "expenses": [],
+      "stages_ms": {
+        "preprocess": 1.4,
+        "denoise": 26.4,
+        "vad": 1.2,
+        "langid": 3686.7,
+        "stt": 2007.8,
+        "diarize": 0.7,
+        "nlp": 0.5
+      },
+      "total_ms": 5728.5,
+      "rtf": 2.864,
+      "errors": [],
+      "confidence": 0.749,
+      "needs_review": false
+    }
+  ]
+}

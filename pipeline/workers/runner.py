@@ -7,11 +7,10 @@ from pathlib import Path
 from .stages import run_job
 
 
-def process_file(path: str, **kw):
+def process_file(path: str, audio_s: float = 0.0, **kw):
     t0 = time.perf_counter()
     res = run_job(path, job_id=Path(path).stem, **kw)
     total_ms = round((time.perf_counter() - t0) * 1000, 1)
-    audio_s = kw.get("_audio_s", 0.0)
     rtf = round((total_ms / 1000) / audio_s, 3) if audio_s else None
     return {"job_id": res.job_id, "ok": res.ok, "transcript": res.transcript,
             "language": res.language, "expenses": res.expenses,
@@ -31,7 +30,7 @@ def benchmark_dir(clips_dir: str, out_json: str = "pipeline/benchmarks/results.j
             dur = len(load_audio(p)[0]) / sr
         except Exception:
             dur = 0.0
-        r = process_file(str(p), _audio_s=dur)
+        r = process_file(str(p), audio_s=dur)
         rows.append(r)
         print(f"{p.name}: ok={r['ok']} total={r['total_ms']}ms rtf={r['rtf']}")
     ok = [r for r in rows if r["ok"]]
