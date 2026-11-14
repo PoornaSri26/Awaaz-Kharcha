@@ -47,7 +47,7 @@ def main() -> int:
     tok = AutoTokenizer.from_pretrained(args.model)
     for k in ds:
         ds[k] = ds[k].map(lambda b: tok(b["text"], truncation=True, max_length=64))
-        ds[k] = ds[k].map(lambda b: {"labels": [LANG2ID[l] for l in b["lang"]]})
+        ds[k] = ds[k].map(lambda b: {"labels": LANG2ID.get(b["lang"], 0)})
 
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(LANGS), id2label={i: l for l, i in LANG2ID.items()},

@@ -54,9 +54,9 @@ def main() -> int:
         return tok(batch["text"], truncation=True, max_length=64)
 
     ds = {k: v.map(enc, batched=True) for k, v in ds.items()}
-    ds["train"] = ds["train"].map(lambda b: {"labels": [LABEL2ID.get(c, 8) for c in b["category"]]})
-    ds["val"] = ds["val"].map(lambda b: {"labels": [LABEL2ID.get(c, 8) for c in b["category"]]})
-    ds["test"] = ds["test"].map(lambda b: {"labels": [LABEL2ID.get(c, 8) for c in b["category"]]})
+    ds["train"] = ds["train"].map(lambda b: {"labels": LABEL2ID.get(b["category"], 8)})
+    ds["val"] = ds["val"].map(lambda b: {"labels": LABEL2ID.get(b["category"], 8)})
+    ds["test"] = ds["test"].map(lambda b: {"labels": LABEL2ID.get(b["category"], 8)})
 
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(LABELS), id2label={i: l for l, i in LABEL2ID.items()},
